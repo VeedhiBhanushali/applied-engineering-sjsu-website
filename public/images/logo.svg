@@ -1,0 +1,6 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="100" r="90" fill="#2d0b5d" />
+  <text x="100" y="85" font-family="Helvetica" font-size="24" fill="white" text-anchor="middle" font-weight="bold">APPLIED</text>
+  <text x="100" y="115" font-family="Helvetica" font-size="24" fill="white" text-anchor="middle" font-weight="bold">ENGINEERING</text>
+  <text x="100" y="140" font-family="Helvetica" font-size="16" fill="white" text-anchor="middle">SJSU</text>
+</svg> 
