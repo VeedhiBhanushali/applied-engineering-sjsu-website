@@ -8,10 +8,6 @@ import { useSpring } from 'react-spring';
 import Link from 'next/link';
 
 export default function Home() {
-  // State for cursor
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-  const [isExpanded, setIsExpanded] = useState(false);
-  
   // Refs for sections
   const heroRef = useRef<HTMLDivElement>(null);
   const aboutRef = useRef<HTMLDivElement>(null);
@@ -27,50 +23,7 @@ export default function Home() {
   
   // State for FAQ
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
-  
-  // Timeline data by month
-  const timelineEventsByMonth = [
-    // January
-    [
-      { date: 'Jan 21', title: 'Application Opens', time: '12:00 AM' },
-      { date: 'Jan 25', title: 'Info Session One', time: '6-8 PM' },
-      { date: 'Jan 28', title: 'Info Session Two', time: '8-10 PM' },
-      { date: 'Jan 30', title: 'Technical Workshop', time: '8-10 PM' },
-      { date: 'Jan 31', title: 'Application Closes', time: '11:59 PM' },
-    ],
-    // February
-    [
-      { date: 'Feb 2', title: 'Technical Deliverables Due', time: '11:59 PM' },
-      { date: 'Feb 5-10', title: 'Interview Week', time: 'Various Times' },
-      { date: 'Feb 15', title: 'Final Decisions', time: '5:00 PM' },
-      { date: 'Feb 20', title: 'Onboarding Session', time: '6:00 PM' },
-      { date: 'Feb 28', title: 'Team Formation', time: '4:00 PM' },
-    ],
-    // March
-    [
-      { date: 'Mar 1', title: 'Project Kickoff', time: '4:00 PM' },
-      { date: 'Mar 10', title: 'First Progress Check', time: '5:00 PM' },
-      { date: 'Mar 15', title: 'Mid-Semester Review', time: '3:00 PM' },
-      { date: 'Mar 25', title: 'Technical Workshop', time: '7:00 PM' },
-      { date: 'Mar 30', title: 'Progress Presentations', time: '5:00 PM' },
-    ],
-    // April
-    [
-      { date: 'Apr 5', title: 'Industry Mentor Day', time: '2:00 PM' },
-      { date: 'Apr 10', title: 'Final Project Sprint', time: 'All Day' },
-      { date: 'Apr 20', title: 'Project Testing', time: '3:00 PM' },
-      { date: 'Apr 25', title: 'Project Showcase', time: '1:00 PM - 5:00 PM' },
-      { date: 'Apr 30', title: 'End of Semester Celebration', time: '7:00 PM' },
-    ],
-    // May
-    [
-      { date: 'May 5', title: 'Project Documentation Due', time: '11:59 PM' },
-      { date: 'May 10', title: 'Summer Project Planning', time: '4:00 PM' },
-      { date: 'May 15', title: 'Leadership Transition', time: '5:00 PM' },
-      { date: 'May 20', title: 'Summer Kickoff', time: '6:00 PM' },
-    ],
-  ];
-  
+
   // FAQ data
   const faqData = [
     {
@@ -92,85 +45,10 @@ export default function Home() {
   ];
 
   // Add this near the top of the file, with other state declarations
-  const [currentMonth, setCurrentMonth] = useState('JANUARY');
-  const [expandedMonth, setExpandedMonth] = useState('JANUARY');
+  const [currentMonth, setCurrentMonth] = useState('AUGUST');
+  const [expandedMonth, setExpandedMonth] = useState('AUGUST');
   const [currentMonthDays, setCurrentMonthDays] = useState<number[]>([]);
   const [firstDayOffset, setFirstDayOffset] = useState(0);
-
-  useEffect(() => {
-    const cursor = document.getElementById('cursor');
-    const cursorBlur = document.getElementById('cursor-blur');
-    let cursorX = 0;
-    let cursorY = 0;
-    let targetX = 0;
-    let targetY = 0;
-
-    const moveCursor = (e: MouseEvent) => {
-      targetX = e.clientX;
-      targetY = e.clientY;
-    };
-
-    const updateCursorPosition = () => {
-      const easing = 0.05; // Lower value = more lag (changed from 0.1)
-      
-      // Calculate the distance between current position and target
-      const dx = targetX - cursorX;
-      const dy = targetY - cursorY;
-      
-      // Move current position a percentage of the distance
-      cursorX += dx * easing;
-      cursorY += dy * easing;
-      
-      // Apply the position
-      if (cursor && cursorBlur) {
-        cursor.style.left = `${cursorX}px`;
-        cursor.style.top = `${cursorY}px`;
-        cursorBlur.style.left = `${cursorX}px`;
-        cursorBlur.style.top = `${cursorY}px`;
-      }
-      
-      // Continue animation
-      requestAnimationFrame(updateCursorPosition);
-    };
-
-    const expandCursor = () => {
-      setIsExpanded(true);
-      if (cursor) {
-        cursor.style.transform = 'translate(-50%, -50%) scale(1.6)';
-        cursor.style.backgroundColor = 'rgba(255, 255, 255, 0.4)';
-      }
-    };
-
-    const shrinkCursor = () => {
-      setIsExpanded(false);
-      if (cursor) {
-        cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-        cursor.style.backgroundColor = 'rgba(255, 255, 255, 0.25)';
-      }
-    };
-
-    // Add event listeners
-    document.addEventListener('mousemove', moveCursor);
-
-    // Add hover effect to all links and buttons
-    const interactiveElements = document.querySelectorAll('a, button, .interactive');
-    interactiveElements.forEach(el => {
-      el.addEventListener('mouseenter', expandCursor);
-      el.addEventListener('mouseleave', shrinkCursor);
-    });
-    
-    // Start the animation loop
-    updateCursorPosition();
-
-    // Cleanup
-    return () => {
-      document.removeEventListener('mousemove', moveCursor);
-      interactiveElements.forEach(el => {
-        el.removeEventListener('mouseenter', expandCursor);
-        el.removeEventListener('mouseleave', shrinkCursor);
-      });
-    };
-  }, []);
 
   useEffect(() => {
     // Function to get days in month
@@ -215,13 +93,8 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      {/* Custom cursor */}
-      <div id="cursor" style={{ left: `${cursorPosition.x}px`, top: `${cursorPosition.y}px` }}></div>
-      <div id="cursor-blur" style={{ left: `${cursorPosition.x}px`, top: `${cursorPosition.y}px` }}></div>
-      
       {/* Header */}
       <header className={styles.header}>
-       
         <nav className={styles.nav}>
           <a href="#about" onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}>ABOUT</a>
           <a href="#teams" onClick={(e) => { e.preventDefault(); scrollToSection('teams'); }}>TEAMS</a>
@@ -250,7 +123,7 @@ export default function Home() {
           <h2 className={styles.heroTitle}>APPLIED <br /> ENGINEERING</h2>
           <div className={styles.heroBottom}>
             <p className={styles.universityText}>SAN JOSE STATE UNIVERSITY</p>
-            <button className={styles.joinButton}>JOIN NOW</button>
+            <Link href="https://docs.google.com/forms/d/e/1FAIpQLSdHEp7dKModGmD9Bj4HVrLc7t_8OrXw6qwkvo3P8eFIjuYkyQ/viewform" className={styles.joinButton} target="_blank">JOIN NOW</Link>
           </div>
         </div>
       </section>
@@ -315,6 +188,7 @@ export default function Home() {
       </section>
 
       {/* Family Section - Moved after Teams section as requested */}
+      {/*
       <section id="family" className={styles.family} ref={familyRef}>
         <div className={styles.familyGrid}>
           <div className={styles.familyImage}>
@@ -367,6 +241,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      */}
 
       {/* Timeline Section */}
       <section className={styles.timeline}>
