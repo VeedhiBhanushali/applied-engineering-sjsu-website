@@ -90,13 +90,13 @@ export default function Contact() {
       {/* Header */}
       <header className={styles.header}>
         <nav className={styles.nav}>
-          <Link href="/#about">About Us</Link>
-          <Link href="/#family">Our Family</Link>
-          <Link href="/#teams">Teams</Link>
-          <Link href="/#timeline">Timeline</Link>
+          <Link href="/#about">ABOUT</Link>
+          <Link href="/#family">FAMILY</Link>
+          <Link href="/#teams">TEAMS</Link>
+          <Link href="/#timeline">TIMELINE</Link>
           <Link href="/#faq">FAQ</Link>
           <Link href="/contact" className={styles.contactBtn}>
-            Contact Us
+            CONTACT
             <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
               <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/>
             </svg>
@@ -174,7 +174,7 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Footer 
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
           <div className={styles.footerLogo}>
@@ -202,6 +202,7 @@ export default function Contact() {
           <p>&copy; {new Date().getFullYear()} Applied Engineering SJSU. All rights reserved.</p>
         </div>
       </footer>
+      */}
     </main>
   );
 } 

@@ -1424,6 +1424,19 @@
   .teamCard {
     margin-right: 0;
   }
+
+  .aboutRight {
+    padding-top: 40px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .aboutButton, .learnMore {
+    margin-right: 0;
+    width: fit-content;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1475,12 +1488,23 @@
   }
   
   .aboutRight {
-    padding-top: 40px;
-    margin-right: 0;
+    padding-top: 30px;
   }
   
-  .aboutButton, .learnMore {
+  .aboutButton {
     margin-right: 0;
+    min-width: 120px;
+    font-size: 11px;
+    padding: 8px 12px;
+  }
+  
+  .learnMore {
+    margin-right: 0;
+    min-width: 80px !important;
+    width: fit-content !important;
+    font-size: 9.2px;
+    padding: 8px 10px;
+    letter-spacing: 0.5px;
   }
   
   .contactContent {
@@ -1659,4 +1683,148 @@
 
 .eventGroup:last-child {
   margin-bottom: 10px;
+}
+
+/* Timeline Section Mobile Optimization */
+@media screen and (max-width: 768px) {
+  .timeline {
+    padding: 20px;
+  }
+
+  .timelineContainer {
+    padding: 10px;
+  }
+
+  .timelineTitle {
+    margin-top: 20px;
+    margin-bottom: 40px;
+    font-size: 32px;
+  }
+
+  .timelineContent {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .calendar {
+    width: 100%;
+    font-size: 14px;
+    padding: 15px;
+    margin-top: 0;
+  }
+
+  .recruitmentTimeline {
+    width: 100%;
+    padding: 15px;
+    margin-top: 20px;
+  }
+
+  .timelineHeader {
+    font-size: 20px;
+    margin-bottom: 30px;
+    margin-top: 10px;
+    text-align: left;
+  }
+
+  .calendarHeader {
+    font-size: 16px;
+  }
+
+  .calendarGrid {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .calendarDays span {
+    font-size: 12px;
+    padding: 5px;
+  }
+
+  .calendarCell {
+    height: 35px;
+    font-size: 12px;
+  }
+
+  .eventIndicator {
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+
+  .timelineEvent {
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .eventMonth {
+    font-size: 16px;
+  }
+
+  .monthEvents {
+    margin-top: 10px;
+  }
+
+  .eventGroup {
+    margin: 8px 0;
+  }
+
+  .eventNameDate {
+    font-size: 14px;
+  }
+
+  .eventName {
+    margin-right: 10px;
+  }
+
+  .eventDate {
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .timelineTitle {
+    font-size: 28px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+  }
+
+  .timelineHeader {
+    font-size: 18px;
+    margin-bottom: 25px;
+    margin-top: 5px;
+  }
+
+  .calendar {
+    padding: 10px;
+  }
+
+  .calendarHeader h3 {
+    font-size: 14px;
+  }
+
+  .calendarDays span {
+    font-size: 10px;
+    padding: 3px;
+  }
+
+  .calendarCell {
+    height: 30px;
+    font-size: 11px;
+  }
+
+  .eventIndicator {
+    font-size: 9px;
+    padding: 1px 2px;
+  }
+
+  .timelineEvent {
+    padding: 8px;
+  }
+
+  .eventMonth {
+    font-size: 14px;
+  }
+
+  .eventNameDate {
+    font-size: 12px;
+  }
 } 

@@ -102,7 +102,7 @@ export default function Home() {
           <a href="#timeline" onClick={(e) => { e.preventDefault(); scrollToSection('timeline'); }}>TIMELINE</a>
           <a href="#faq" onClick={(e) => { e.preventDefault(); scrollToSection('faq'); }}>FAQ</a>
           <Link href="/contact" className={styles.contactBtn}>
-            CONTACT US
+            CONTACT
             <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
               <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/>
             </svg>
