@@ -64,6 +64,7 @@
 .contactBtn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   background: transparent;
   padding: 6px 15px;
@@ -74,11 +75,14 @@
   border: none;
   margin-left: 20px;
   letter-spacing: 1.5px;
+  position: relative;
+  min-width: 100px;
 }
 
 .contactBtn:hover {
   background: var(--white);
   color: var(--black);
+  padding: 8px 20px;
 }
 
 .contactBtn::after {
@@ -1475,8 +1479,12 @@
   }
   
   .contactBtn {
-    padding: 4px 12px;
-    margin-left: 10px;
+    min-width: 80px;
+    padding: 6px 12px;
+  }
+  
+  .contactBtn:hover {
+    padding: 8px 15px;
   }
   
   .heroTitle {
