@@ -91,6 +91,12 @@ export default function Home() {
     }
   ];
 
+  // Add this near the top of the file, with other state declarations
+  const [currentMonth, setCurrentMonth] = useState('JANUARY');
+  const [expandedMonth, setExpandedMonth] = useState('JANUARY');
+  const [currentMonthDays, setCurrentMonthDays] = useState<number[]>([]);
+  const [firstDayOffset, setFirstDayOffset] = useState(0);
+
   useEffect(() => {
     const cursor = document.getElementById('cursor');
     const cursorBlur = document.getElementById('cursor-blur');
@@ -166,6 +172,36 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    // Function to get days in month
+    const getDaysInMonth = (month: string) => {
+      const daysMap: { [key: string]: number } = {
+        'JANUARY': 31,
+        'FEBRUARY': 28,
+        'MARCH': 31,
+        'APRIL': 30,
+        'MAY': 31
+      };
+      return daysMap[month] || 31;
+    };
+
+    // Function to get first day offset (0 = Sunday, 1 = Monday, etc.)
+    const getFirstDayOffset = (month: string) => {
+      const offsetMap: { [key: string]: number } = {
+        'JANUARY': 0, // Sunday
+        'FEBRUARY': 3, // Wednesday
+        'MARCH': 3, // Wednesday
+        'APRIL': 6, // Saturday
+        'MAY': 1 // Monday
+      };
+      return offsetMap[month] || 0;
+    };
+
+    const days = Array.from({ length: getDaysInMonth(currentMonth) }, (_, i) => i + 1);
+    setCurrentMonthDays(days);
+    setFirstDayOffset(getFirstDayOffset(currentMonth));
+  }, [currentMonth]);
+
   // Smooth scroll function
   const scrollToSection = (elementId: string) => {
     const element = document.getElementById(elementId);
@@ -185,18 +221,15 @@ export default function Home() {
       
       {/* Header */}
       <header className={styles.header}>
-        <div className={styles.headerLogo}>
-          <Image src="/images/ae-logo.png" alt="Applied Engineering Logo" width={30} height={30} />
-          <span>Applied Engineering</span>
-        </div>
+       
         <nav className={styles.nav}>
-          <a href="#about" onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}>About</a>
-          <a href="#teams" onClick={(e) => { e.preventDefault(); scrollToSection('teams'); }}>Teams</a>
-          <a href="#family" onClick={(e) => { e.preventDefault(); scrollToSection('family'); }}>Family</a>
-          <a href="#timeline" onClick={(e) => { e.preventDefault(); scrollToSection('timeline'); }}>Timeline</a>
+          <a href="#about" onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}>ABOUT</a>
+          <a href="#teams" onClick={(e) => { e.preventDefault(); scrollToSection('teams'); }}>TEAMS</a>
+          <a href="#family" onClick={(e) => { e.preventDefault(); scrollToSection('family'); }}>FAMILY</a>
+          <a href="#timeline" onClick={(e) => { e.preventDefault(); scrollToSection('timeline'); }}>TIMELINE</a>
           <a href="#faq" onClick={(e) => { e.preventDefault(); scrollToSection('faq'); }}>FAQ</a>
           <Link href="/contact" className={styles.contactBtn}>
-            Contact Us
+            CONTACT US
             <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
               <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/>
             </svg>
@@ -205,42 +238,20 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section id="hero" className={styles.hero} ref={heroRef}>
+      <section className={styles.hero}>
         <div className={styles.heroContent}>
-          <div className={styles.heroLeft}>
-            <h1 className={styles.title}>Engineering the Future — One Project at a Time.</h1>
-            <div className={styles.heroLine}></div>
-            <p className={styles.subtitle}>
-              Applied Engineering at SJSU brings together talented students from mechanical, electrical, and software engineering to solve real-world problems through innovative solutions and interdisciplinary collaboration.
-            </p>
-            <div className={styles.heroButtons}>
-              <button className={styles.btn} onClick={() => scrollToSection('about')}>
-                Learn More
-                <span className={styles.btnArrow}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-                    <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/>
-                  </svg>
-                </span>
-              </button>
-              <Link href="/contact" className={styles.btnOutline}>
-                Join Us
-                <span className={styles.btnArrow}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-                    <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/>
-                  </svg>
-                </span>
-              </Link>
-            </div>
+          <Image 
+            src="/logo.png"
+            alt="Applied Engineering Logo"
+            width={80}
+            height={80}
+            className={styles.heroLogo}
+          />
+          <h2 className={styles.heroTitle}>APPLIED <br /> ENGINEERING</h2>
+          <div className={styles.heroBottom}>
+            <p className={styles.universityText}>SAN JOSE STATE UNIVERSITY</p>
+            <button className={styles.joinButton}>JOIN NOW</button>
           </div>
-          <div className={styles.heroRight}>
-            {/* Removed engineering illustration as requested */}
-          </div>
-        </div>
-        <div className={styles.scrollIndicator} onClick={() => scrollToSection('about')}>
-          <span>Scroll Down</span>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
-          </svg>
         </div>
       </section>
 
@@ -248,94 +259,58 @@ export default function Home() {
       <section id="about" className={styles.about} ref={aboutRef}>
         <div className={styles.aboutContent}>
           <div className={styles.aboutLeft}>
-            <div className={styles.aboutText}>
-              Applied Engineering is a student-led organization at San Jose State University dedicated to fostering interdisciplinary collaboration among engineering students. We provide hands-on experience through real-world projects, workshops, and industry partnerships.
-            </div>
-            <div className={styles.aboutText}>
-              <p className={styles.descriptionText}>
-                Our mission is to bridge the gap between academic learning and professional practice, creating a community where students can develop technical skills, leadership abilities, and innovative thinking.
-              </p>
-            </div>
-            <div className={styles.aboutCTA}>
-              <Link href="/contact" className={styles.btn}>
-                Partner With Us
-                <span className={styles.btnArrow}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-                    <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z"/>
-                  </svg>
-                </span>
-              </Link>
+            <h1 className={styles.aboutTitle}>
+              SJSU'S FIRST STUDENT-LED ENGINEERING<br />
+              CONSULTING CLUB,<br />
+              DESIGNED TO GIVE STUDENTS<br />
+              THE HANDS-ON EXPERIENCE THEY NEED<br />
+              — BUT RARELY GET.
+            </h1>
+            <div className={styles.aboutLinks}>
+              <p>BUILD YOUR PORTFOLIO <br />WORK WITH INDUSTRY <br />GET HIRED</p>
             </div>
           </div>
           <div className={styles.aboutRight}>
-            <div className={styles.statCard}>
-              <h3>For Students</h3>
-              <p className={styles.descriptionText}>Gain hands-on experience with real-world engineering projects, develop technical and soft skills, and build a professional network with industry connections.</p>
-            </div>
-            <div className={styles.statCard}>
-              <h3>For Faculty</h3>
-              <p className={styles.descriptionText}>Collaborate with motivated students on research initiatives, access interdisciplinary engineering talent, and bridge the gap between academic theory and practical application.</p>
-            </div>
-            <div className={styles.statCard}>
-              <h3>For Industry</h3>
-              <p className={styles.descriptionText}>Partner with talented engineering students to solve technical challenges, prototype innovative solutions, and identify potential future employees for you.</p>
-            </div>
+            <button className={styles.aboutButton}>FOR INDUSTRY</button>
+            <button className={styles.aboutButton}>FOR STUDENTS</button>
+            <button className={styles.learnMore}>LEARN MORE</button>
           </div>
         </div>
       </section>
 
-      {/* Teams Section - Moved before Family section as requested */}
+      {/* Teams Section */}
       <section id="teams" className={styles.teams} ref={teamsRef}>
-        <div className={styles.sectionHeader}>
-          <h2>&nbsp;Our Teams &nbsp;&nbsp; &nbsp;&nbsp;</h2>
-          <div className={styles.line}></div>
+        <div className={styles.teamsHeader}>
+          <h2>TEAMS</h2>
+          <div className={styles.teamsSubheader}>
+            <p>WORK IN CROSS-DISCIPLINARY TEAMS</p>
+            <p>WORKING IN UNISON</p>
+          </div>
         </div>
         <div className={styles.teamsGrid}>
-          <Link href="/teams/mechanical" className={styles.teamCard}>
-            <div className={styles.teamIcon}>
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14 8C14 9.10457 13.1046 10 12 10C10.8954 10 10 9.10457 10 8C10 6.89543 10.8954 6 12 6C13.1046 6 14 6.89543 14 8Z" stroke="white" strokeWidth="1.5"/>
-                <path d="M19.5 8C19.5 8.55228 19.0523 9 18.5 9C17.9477 9 17.5 8.55228 17.5 8C17.5 7.44772 17.9477 7 18.5 7C19.0523 7 19.5 7.44772 19.5 8Z" stroke="white" strokeWidth="1.5"/>
-                <path d="M6.5 8C6.5 8.55228 6.05228 9 5.5 9C4.94772 9 4.5 8.55228 4.5 8C4.5 7.44772 4.94772 7 5.5 7C6.05228 7 6.5 7.44772 6.5 8Z" stroke="white" strokeWidth="1.5"/>
-                <path d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8" stroke="white" strokeWidth="1.5"/>
-                <path d="M16.5 16H16.51" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M12 16H12.01" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M7.5 16H7.51" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
+          <div className={styles.teamCard}>
+            <div className={styles.teamNumber}>01</div>
+            <div className={styles.teamContent}>
+              <h3>MECHANICAL</h3>
+              <h4>DESIGN THE FOUNDATION OF INNOVATION.
+              <p>OUR MECHANICAL TEAM ENGINEERS THE PHYSICAL WORLD — FROM INTRICATE CAD MODELS AND ROBUST MECHANISMS TO FULLY FUNCTIONAL PROTOTYPES.</p></h4>
             </div>
-            <h3>&nbsp;Mechanical Engineering</h3>
-            <p className={styles.descriptionText}>
-              Our mechanical engineering team specializes in designing and prototyping physical systems, from robotics and automation to structural analysis and manufacturing processes.
-            </p>
-          </Link>
-          <Link href="/teams/electrical" className={styles.teamCard}>
-            <div className={styles.teamIcon}>
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 7V13" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M9 10H15" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M5 15.2421C4.44752 13.6273 4.44752 11.3727 5 9.75771M7.5 11.2421C7.16473 10.4273 7.16473 9.57271 7.5 8.75771" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M19 15.2421C19.5525 13.6273 19.5525 11.3727 19 9.75771M16.5 11.2421C16.8353 10.4273 16.8353 9.57271 16.5 8.75771" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" strokeWidth="1.5"/>
-              </svg>
+          </div>
+          <div className={styles.teamCard}>
+            <div className={styles.teamNumber}>02</div>
+            <div className={styles.teamContent}>
+              <h3>ELECTRICAL</h3>
+              <h4>BRING INTELLIGENCE TO HARDWARE.
+              <p>WE HANDLE EVERYTHING FROM CIRCUIT DESIGN AND PCB LAYOUT TO SENSORS, MICROCONTROLLERS, AND EMBEDDED SYSTEMS. WE CREATE THE INTERFACE BETWEEN MECHANICAL FORM AND DIGITAL CONTROL.</p></h4>
             </div>
-            <h3>&nbsp;Electrical Engineering</h3>
-            <p className={styles.descriptionText}>
-              The electrical engineering team focuses on circuit design, embedded systems, power electronics, and signal processing for a wide range of applications and industries.
-            </p>
-          </Link>
-          <Link href="/teams/software" className={styles.teamCard}>
-            <div className={styles.teamIcon}>
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M17 7.82959L18.6965 9.35641C20.239 10.7447 21.0103 11.4389 21.0103 12.3296C21.0103 13.2203 20.239 13.9145 18.6965 15.3028L17 16.8296" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-                <path d="M13.9868 5L10.0132 19.8297" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-                <path d="M7.00005 7.82959L5.30358 9.35641C3.76102 10.7447 2.98975 11.4389 2.98975 12.3296C2.98975 13.2203 3.76102 13.9145 5.30358 15.3028L7.00005 16.8296" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
+          </div>
+          <div className={styles.teamCard}>
+            <div className={styles.teamNumber}>03</div>
+            <div className={styles.teamContent}>
+              <h3>SOFTWARE</h3>
+              <h4>BRAINS BEHIND EVERY BUILD.<p>OUR SOFTWARE TEAM BRIDGES HARDWARE AND INTELLIGENCE — CODING THE SYSTEMS THAT ENABLE AUTOMATION, DECISION-MAKING, AND CONTROL.</p></h4>
             </div>
-            <h3>&nbsp;Software Engineering</h3>
-            <p className={styles.descriptionText}>
-              Our software team develops applications, algorithms, and interfaces that power our projects, from web and mobile apps to machine learning models and control systems.
-            </p>
-          </Link>
+          </div>
         </div>
       </section>
 
@@ -394,165 +369,184 @@ export default function Home() {
       </section>
 
       {/* Timeline Section */}
-      <section id="timeline" className={styles.timeline} ref={timelineRef}>
-        <div className={styles.timelineHeader}>
-          <h2>Spring 2025 Recruitment Timeline</h2>
-          <div className={styles.line}></div>
-          <p style={{ maxWidth: '800px', margin: '0', color: 'var(--black)' }}>
-            Ready to join our family and work on exciting projects? Applications for Spring 2025 open soon for all majors!
-          </p>
-        </div>
+      <section className={styles.timeline}>
         <div className={styles.timelineContainer}>
-          {/* Month tabs */}
-          <div className={styles.timelineTabs}>
-            {months.map((month, index) => (
-              <div 
-                key={month} 
-                className={`${styles.timelineTab} ${activeMonth === index ? styles.active : ''}`}
-                onClick={() => setActiveMonth(index)}
-              >
-                {month}
+          <h2 className={styles.timelineTitle}>FALL 2025</h2>
+          
+          <div className={styles.timelineContent}>
+            {/* Left side - Calendar */}
+            <div className={styles.calendar}>
+              <div className={styles.calendarHeader}>
+                <h3>{currentMonth}</h3>
+                <h3>EVENTS</h3>
               </div>
-            ))}
+              
+              <div className={styles.calendarGrid}>
+                <div className={styles.calendarDays}>
+                  <span>SUN</span>
+                  <span>MON</span>
+                  <span>TUE</span>
+                  <span>WED</span>
+                  <span>THU</span>
+                  <span>FRI</span>
+                  <span>SAT</span>
+                </div>
+                
+                <div className={styles.calendarDates}>
+                  {/* Empty cells for offset */}
+                  {Array.from({ length: firstDayOffset }, (_, i) => (
+                    <div key={`empty-${i}`} className={styles.calendarCell}></div>
+                  ))}
+                  
+                  {/* Actual date cells */}
+                  {currentMonthDays.map((day) => (
+                    <div 
+                      key={`day-${day}`} 
+                      className={`${styles.calendarCell} ${
+                        currentMonth === 'JANUARY' && day === 21 ? styles.eventCell : ''
+                      }`}
+                    >
+                      {day}
+                      {currentMonth === 'JANUARY' && day === 21 && (
+                        <div className={styles.eventIndicator}>Event One</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Right side - Timeline */}
+            <div className={styles.recruitmentTimeline}>
+              <div className={styles.timelineEvents}>
+                <h2 className={styles.timelineHeader}>RECRUITMENT TIMELINE</h2>
+                
+                {/* January */}
+                <div 
+                  className={styles.timelineEvent}
+                  onClick={() => {
+                    setCurrentMonth('JANUARY');
+                    setExpandedMonth('JANUARY');
+                  }}
+                >
+                  <span className={styles.eventMonth}>JANUARY</span>
+                  {expandedMonth === 'JANUARY' && (
+                    <div className={styles.monthEvents}>
+                      <div className={styles.eventGroup}>
+                        <div className={styles.eventNameDate}>
+                          <span className={styles.eventName}>EVENT ONE</span>
+                          <span className={styles.eventDate}>01/21</span>
+                        </div>
+                      </div>
+                      <div className={styles.eventGroup}>
+                        <div className={styles.eventNameDate}>
+                          <span className={styles.eventName}>EVENT TWO</span>
+                          <span className={styles.eventDate}>01/25</span>
+                        </div>
+                      </div>
+                      <div className={styles.eventGroup}>
+                        <div className={styles.eventNameDate}>
+                          <span className={styles.eventName}>EVENT THREE</span>
+                          <span className={styles.eventDate}>01/26</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* February */}
+                <div 
+                  className={styles.timelineEvent}
+                  onClick={() => {
+                    setCurrentMonth('FEBRUARY');
+                    setExpandedMonth('FEBRUARY');
+                  }}
+                >
+                  <span className={styles.eventMonth}>FEBRUARY</span>
+                  {expandedMonth === 'FEBRUARY' && (
+                    <div className={styles.monthEvents}>
+                      <div className={styles.eventGroup}>
+                        <div className={styles.eventNameDate}>
+                          <span className={styles.eventName}>FEBRUARY →</span>
+                          <span className={styles.eventDate}>02/01</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* March */}
+                <div 
+                  className={styles.timelineEvent}
+                  onClick={() => {
+                    setCurrentMonth('MARCH');
+                    setExpandedMonth('MARCH');
+                  }}
+                >
+                  <span className={styles.eventMonth}>MARCH</span>
+                  {expandedMonth === 'MARCH' && (
+                    <div className={styles.monthEvents}>
+                      <div className={styles.eventGroup}>
+                        <div className={styles.eventNameDate}>
+                          <span className={styles.eventName}>MARCH →</span>
+                          <span className={styles.eventDate}>03/01</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* April */}
+                <div 
+                  className={styles.timelineEvent}
+                  onClick={() => {
+                    setCurrentMonth('APRIL');
+                    setExpandedMonth('APRIL');
+                  }}
+                >
+                  <span className={styles.eventMonth}>APRIL</span>
+                  {expandedMonth === 'APRIL' && (
+                    <div className={styles.monthEvents}>
+                      <div className={styles.eventGroup}>
+                        <div className={styles.eventNameDate}>
+                          <span className={styles.eventName}>APRIL →</span>
+                          <span className={styles.eventDate}>04/01</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* May */}
+                <div 
+                  className={styles.timelineEvent}
+                  onClick={() => {
+                    setCurrentMonth('MAY');
+                    setExpandedMonth('MAY');
+                  }}
+                >
+                  <span className={styles.eventMonth}>MAY</span>
+                  {expandedMonth === 'MAY' && (
+                    <div className={styles.monthEvents}>
+                      <div className={styles.eventGroup}>
+                        <div className={styles.eventNameDate}>
+                          <span className={styles.eventName}>MAY →</span>
+                          <span className={styles.eventDate}>05/01</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-          
-          {/* Display timeline events based on active month */}
-          {activeMonth === 0 && (
-            <div className={styles.timelineBar}>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>Jan 21</div>
-                <div className={styles.eventTitle}>Application Opens</div>
-                <div className={styles.eventTime}>12:00 AM</div>
-              </div>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>Jan 25</div>
-                <div className={styles.eventTitle}>Info Session One</div>
-                <div className={styles.eventTime}>6-8 PM</div>
-              </div>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>Jan 28</div>
-                <div className={styles.eventTitle}>Info Session Two</div>
-                <div className={styles.eventTime}>8-10 PM</div>
-              </div>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>Jan 30</div>
-                <div className={styles.eventTitle}>Technical Workshop</div>
-                <div className={styles.eventTime}>8-10 PM</div>
-              </div>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>Jan 31</div>
-                <div className={styles.eventTitle}>Application Closes</div>
-                <div className={styles.eventTime}>12:00 PM</div>
-              </div>
-            </div>
-          )}
-          
-          {activeMonth === 1 && (
-            <div className={styles.timelineBar}>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>Feb 2</div>
-                <div className={styles.eventTitle}>Technical Deliverables Due</div>
-                <div className={styles.eventTime}>11:59 PM</div>
-              </div>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>Feb 3-4</div>
-                <div className={styles.eventTitle}>Technical Interviews</div>
-                <div className={styles.eventTime}>Various Times</div>
-              </div>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>Feb 7</div>
-                <div className={styles.eventTitle}>Acceptances Sent</div>
-                <div className={styles.eventTime}>5:00 PM</div>
-              </div>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>Feb 15</div>
-                <div className={styles.eventTitle}>Onboarding</div>
-                <div className={styles.eventTime}>4:00 PM</div>
-              </div>
-            </div>
-          )}
-          
-          {activeMonth === 2 && (
-            <div className={styles.timelineBar}>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>Mar 1</div>
-                <div className={styles.eventTitle}>Project Kickoff</div>
-                <div className={styles.eventTime}>4:00 PM</div>
-              </div>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>Mar 10</div>
-                <div className={styles.eventTitle}>First Progress Check</div>
-                <div className={styles.eventTime}>5:00 PM</div>
-              </div>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>Mar 15</div>
-                <div className={styles.eventTitle}>Mid-Semester Review</div>
-                <div className={styles.eventTime}>3:00 PM</div>
-              </div>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>Mar 25</div>
-                <div className={styles.eventTitle}>Workshop</div>
-                <div className={styles.eventTime}>7:00 PM</div>
-              </div>
-            </div>
-          )}
-          
-          {activeMonth === 3 && (
-            <div className={styles.timelineBar}>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>Apr 5</div>
-                <div className={styles.eventTitle}>Mentor Day</div>
-                <div className={styles.eventTime}>2:00 PM</div>
-              </div>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>Apr 10</div>
-                <div className={styles.eventTitle}>Project Sprint</div>
-                <div className={styles.eventTime}>All Day</div>
-              </div>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>Apr 15</div>
-                <div className={styles.eventTitle}>Final Presentations</div>
-                <div className={styles.eventTime}>5:00 PM</div>
-              </div>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>Apr 25</div>
-                <div className={styles.eventTitle}>End of Semester</div>
-                <div className={styles.eventTime}>3:00 PM</div>
-              </div>
-            </div>
-          )}
-          
-          {activeMonth === 4 && (
-            <div className={styles.timelineBar}>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>May 5</div>
-                <div className={styles.eventTitle}>Project Showcase</div>
-                <div className={styles.eventTime}>1:00 PM</div>
-              </div>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>May 10</div>
-                <div className={styles.eventTitle}>Industry Demo Day</div>
-                <div className={styles.eventTime}>4:00 PM</div>
-              </div>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>May 15</div>
-                <div className={styles.eventTitle}>Team Celebration</div>
-                <div className={styles.eventTime}>6:00 PM</div>
-              </div>
-              <div className={styles.timelineEvent}>
-                <div className={styles.eventDate}>May 20</div>
-                <div className={styles.eventTitle}>Summer Planning</div>
-                <div className={styles.eventTime}>2:00 PM</div>
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
       {/* FAQ Section */}
       <section id="faq" className={styles.faq} ref={faqRef}>
         <div className={styles.faqHeader}>
-          <h2>Frequently Asked Questions</h2>
+          <h2>FREQUENTLY <br /> ASKED <span className={styles.dash}>———</span> <br /> <span>QUESTIONS</span></h2>
           <div className={styles.line}></div>
         </div>
         <div className={styles.faqContainer}>
@@ -573,36 +567,30 @@ export default function Home() {
             </div>
           ))}
         </div>
+        <div className={styles.faqBottomText}>
+          <div className={styles.appliedText}>APPLIED</div>
+          <div className={styles.engineeringText}>ENGINEERING</div>
+          <div className={styles.faqSocialIcons}>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+              </svg>
+            </a>
+            <a href="https://linktr.ee/appliedengineering" target="_blank" rel="noopener noreferrer" className={styles.socialIcon}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8.092 2.585a1 1 0 011.816 0L12 6.414l2.092-3.829a1 1 0 011.816 0L19.5 8.5h-15l3.592-5.915zM21 10v10a2 2 0 01-2 2H5a2 2 0 01-2-2V10h18zm-9 2h-2v6h2v-6zm4 0h-2v6h2v-6z"/>
+              </svg>
+            </a>
+            <a href="mailto:contact@appliedengineering.com" className={styles.socialIcon}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
       </section>
 
-      {/* Footer */}
-      <footer className={styles.footer}>
-        <div className={styles.footerContent}>
-          <div className={styles.footerLogo}>
-            <h3>Applied Engineering</h3>
-            <p>Engineering the Future — One Project at a Time</p>
-          </div>
-          <div className={styles.footerLinks}>
-            <div className={styles.footerLinkGroup}>
-              <h4>Navigation</h4>
-              <a href="#about" onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}>About Us</a>
-              <a href="#family" onClick={(e) => { e.preventDefault(); scrollToSection('family'); }}>Our Family</a>
-              <a href="#teams" onClick={(e) => { e.preventDefault(); scrollToSection('teams'); }}>Teams</a>
-              <a href="#timeline" onClick={(e) => { e.preventDefault(); scrollToSection('timeline'); }}>Timeline</a>
-            </div>
-            <div className={styles.footerLinkGroup}>
-              <h4>Resources</h4>
-              <a href="#faq" onClick={(e) => { e.preventDefault(); scrollToSection('faq'); }}>FAQ</a>
-              <Link href="/contact">Contact</Link>
-              <a href="#">Privacy Policy</a>
-              <a href="#">Terms of Service</a>
-            </div>
-          </div>
-        </div>
-        <div className={styles.footerBottom}>
-          <p>&copy; {new Date().getFullYear()} Applied Engineering SJSU. All rights reserved.</p>
-        </div>
-      </footer>
+     
     </main>
   );
 }
