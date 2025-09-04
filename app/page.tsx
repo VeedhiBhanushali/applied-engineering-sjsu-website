@@ -23,12 +23,81 @@ export default function Home() {
   
   // State for FAQ
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  
+  // State for expanded team card
+  const [expandedTeam, setExpandedTeam] = useState<number | null>(null);
+  
+  // State for industry modal
+  const [showIndustryModal, setShowIndustryModal] = useState(false);
+  
+  // State for students modal
+  const [showStudentsModal, setShowStudentsModal] = useState(false);
+
+  // Handle escape key to close overlays
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setExpandedTeam(null);
+        setShowIndustryModal(false);
+        setShowStudentsModal(false);
+      }
+    };
+
+    if (expandedTeam || showIndustryModal || showStudentsModal) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [expandedTeam, showIndustryModal, showStudentsModal]);
+
+  // Team detailed content
+  const teamDetails = [
+    {
+      id: 1,
+      title: "TECHNICAL",
+      subtitle: "TURNING CODE INTO IMPACT",
+      description: "WE LEAD SOFTWARE PROJECTS, TECHNICAL WORKSHOPS, AND SKILL-BUILDING INITIATIVES — DELIVERING REAL SOLUTIONS FOR CLIENTS WHILE EQUIPPING MEMBERS WITH INDUSTRY-READY EXPERIENCE.",
+      detailedContent: {
+        skills: ["Full-Stack Development", "Mobile App Development", "API Design", "Database Architecture", "Cloud Infrastructure"],
+        projects: ["Client Web Applications", "Technical Workshops", "Skill-Building Programs", "Software Solutions"],
+        tools: ["React", "Node.js", "Python", "AWS", "Docker", "Git"]
+      }
+    },
+    {
+      id: 2,
+      title: "MANAGEMENT",
+      subtitle: "DRIVING STRATEGY AND PARTNERSHIPS",
+      description: "WE OVERSEE OPERATIONS, CLIENT OUTREACH, FINANCES, AND LOGISTICS — ENSURING AE RUNS LIKE A CONSULTING FIRM AND EVERY PROJECT TEAM HAS THE SUPPORT TO SUCCEED.",
+      detailedContent: {
+        skills: ["Project Management", "Client Relations", "Financial Planning", "Strategic Planning", "Operations Management"],
+        projects: ["Client Partnerships", "Operational Systems", "Budget Management", "Team Coordination"],
+        tools: ["Notion", "Slack", "Google Workspace", "Figma", "Trello", "QuickBooks"]
+      }
+    },
+    {
+      id: 3,
+      title: "CREATIVES",
+      subtitle: "DESIGNING THE STORY AND EXPERIENCE",
+      description: "WE SHAPE AE'S BRAND THROUGH MARKETING, EVENTS, AND MEDIA — MAKING OUR WORK VISIBLE, ENGAGING, AND INSPIRING TO STUDENTS, CLIENTS, AND THE COMMUNITY.",
+      detailedContent: {
+        skills: ["Brand Design", "Digital Marketing", "Event Planning", "Content Creation", "Social Media Strategy"],
+        projects: ["Brand Identity", "Marketing Campaigns", "Event Production", "Content Strategy"],
+        tools: ["Adobe Creative Suite", "Figma", "Canva", "Instagram", "LinkedIn", "Webflow"]
+      }
+    }
+  ];
 
   // FAQ data
   const faqData = [
     {
       question: 'What services does Applied Engineering offer ?',
-      answer: 'Applied Engineering offers a range of engineering consulting services including mechanical design, electrical systems development, software solutions, and interdisciplinary project management for both academic and industry partners.'
+      answer: 'Applied Engineering provides student-led software consulting services, delivering high-quality solutions such as web and mobile applications, automation tools, and data-driven systems. Our teams work with clients each semester to design, develop, and deploy cost-effective software while giving students real-world project experience.'
     },
     {
       question: 'How does Applied Engineering work with clients ?',
@@ -45,8 +114,8 @@ export default function Home() {
   ];
 
   // Add this near the top of the file, with other state declarations
-  const [currentMonth, setCurrentMonth] = useState('JANUARY');
-  const [expandedMonth, setExpandedMonth] = useState('JANUARY');
+  const [currentMonth, setCurrentMonth] = useState('SEPTEMBER');
+  const [expandedMonth, setExpandedMonth] = useState('SEPTEMBER');
   const [currentMonthDays, setCurrentMonthDays] = useState<number[]>([]);
   const [firstDayOffset, setFirstDayOffset] = useState(0);
 
@@ -54,11 +123,10 @@ export default function Home() {
     // Function to get days in month
     const getDaysInMonth = (month: string) => {
       const daysMap: { [key: string]: number } = {
-        'JANUARY': 31,
-        'FEBRUARY': 28,
-        'MARCH': 31,
-        'APRIL': 30,
-        'MAY': 31
+        'SEPTEMBER': 30,
+        'OCTOBER': 31,
+        'NOVEMBER': 30,
+        'DECEMBER': 31
       };
       return daysMap[month] || 31;
     };
@@ -66,11 +134,10 @@ export default function Home() {
     // Function to get first day offset (0 = Sunday, 1 = Monday, etc.)
     const getFirstDayOffset = (month: string) => {
       const offsetMap: { [key: string]: number } = {
-        'JANUARY': 0, // Sunday
-        'FEBRUARY': 3, // Wednesday
-        'MARCH': 3, // Wednesday
-        'APRIL': 6, // Saturday
-        'MAY': 1 // Monday
+        'SEPTEMBER': 1, // Monday
+        'OCTOBER': 3, // Wednesday
+        'NOVEMBER': 6, // Saturday
+        'DECEMBER': 1 // Monday
       };
       return offsetMap[month] || 0;
     };
@@ -95,6 +162,9 @@ export default function Home() {
     <main className={styles.main}>
       {/* Header */}
       <header className={styles.header}>
+        <Link href="/" className={styles.logoLink}>
+          <Image src="/ae-logo.png" alt="AE Logo" width={40} height={24} className={styles.logo} />
+        </Link>
         <nav className={styles.nav}>
           <a href="#about" onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}>ABOUT</a>
           <a href="#teams" onClick={(e) => { e.preventDefault(); scrollToSection('teams'); }}>TEAMS</a>
@@ -114,10 +184,10 @@ export default function Home() {
       <section className={styles.hero}>
         <div className={styles.heroContent}>
           <Image 
-            src="/logo.png"
+            src="/ae-logo.png"
             alt="Applied Engineering Logo"
-            width={80}
-            height={80}
+            width={120}
+            height={72}
             className={styles.heroLogo}
           />
           <h2 className={styles.heroTitle}>APPLIED <br /> ENGINEERING</h2>
@@ -144,8 +214,8 @@ export default function Home() {
             </div>
           </div>
           <div className={styles.aboutRight}>
-            <button className={styles.aboutButton}>FOR INDUSTRY</button>
-            <button className={styles.aboutButton}>FOR STUDENTS</button>
+            <button className={styles.aboutButton} onClick={() => setShowIndustryModal(true)}>FOR INDUSTRY</button>
+            <button className={styles.aboutButton} onClick={() => setShowStudentsModal(true)}>FOR STUDENTS</button>
             <button className={styles.learnMore}>LEARN MORE</button>
         </div>
         </div>
@@ -161,31 +231,272 @@ export default function Home() {
           </div>
         </div>
         <div className={styles.teamsGrid}>
-          <div className={styles.teamCard}>
-            <div className={styles.teamNumber}>01</div>
+          <motion.div 
+            className={styles.teamCard}
+            whileHover={{ 
+              y: -12, 
+              scale: 1.03,
+              transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
+            }}
+            transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            onClick={() => setExpandedTeam(1)}
+          >
+            <motion.div 
+              className={styles.teamNumber}
+              whileHover={{ 
+                scale: 1.08,
+                transition: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }
+              }}
+              transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+            >
+              01
+            </motion.div>
             <div className={styles.teamContent}>
-              <h3>MECHANICAL</h3>
-              <h4>DESIGN THE FOUNDATION OF INNOVATION.
-              <p>OUR MECHANICAL TEAM ENGINEERS THE PHYSICAL WORLD — FROM INTRICATE CAD MODELS AND ROBUST MECHANISMS TO FULLY FUNCTIONAL PROTOTYPES.</p></h4>
+              <motion.h3
+                whileHover={{ 
+                  y: -3,
+                  transition: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }
+                }}
+                transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+              >
+                TECHNICAL
+              </motion.h3>
+              <h4>TURNING CODE INTO IMPACT.
+              <motion.p
+                whileHover={{ 
+                  y: -2,
+                  transition: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }
+                }}
+                transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+              >
+                WE LEAD SOFTWARE PROJECTS, TECHNICAL WORKSHOPS, AND SKILL-BUILDING INITIATIVES — DELIVERING REAL SOLUTIONS FOR CLIENTS WHILE EQUIPPING MEMBERS WITH INDUSTRY-READY EXPERIENCE.
+              </motion.p></h4>
             </div>
-          </div>
-          <div className={styles.teamCard}>
-            <div className={styles.teamNumber}>02</div>
+          </motion.div>
+          <motion.div 
+            className={styles.teamCard}
+            whileHover={{ 
+              y: -12, 
+              scale: 1.03,
+              transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
+            }}
+            transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            onClick={() => setExpandedTeam(2)}
+          >
+            <motion.div 
+              className={styles.teamNumber}
+              whileHover={{ 
+                scale: 1.08,
+                transition: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }
+              }}
+              transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+            >
+              02
+            </motion.div>
             <div className={styles.teamContent}>
-              <h3>ELECTRICAL</h3>
-              <h4>BRING INTELLIGENCE TO HARDWARE.
-              <p>WE HANDLE EVERYTHING FROM CIRCUIT DESIGN AND PCB LAYOUT TO SENSORS, MICROCONTROLLERS, AND EMBEDDED SYSTEMS. WE CREATE THE INTERFACE BETWEEN MECHANICAL FORM AND DIGITAL CONTROL.</p></h4>
+              <motion.h3
+                whileHover={{ 
+                  y: -3,
+                  transition: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }
+                }}
+                transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+              >
+                MANAGEMENT
+              </motion.h3>
+              <h4>DRIVING STRATEGY AND PARTNERSHIPS.
+              <motion.p
+                whileHover={{ 
+                  y: -2,
+                  transition: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }
+                }}
+                transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+              >
+                WE OVERSEE OPERATIONS, CLIENT OUTREACH, FINANCES, AND LOGISTICS — ENSURING AE RUNS LIKE A CONSULTING FIRM AND EVERY PROJECT TEAM HAS THE SUPPORT TO SUCCEED.
+              </motion.p></h4>
             </div>
-          </div>
-          <div className={styles.teamCard}>
-            <div className={styles.teamNumber}>03</div>
+          </motion.div>
+          <motion.div 
+            className={styles.teamCard}
+            whileHover={{ 
+              y: -12, 
+              scale: 1.03,
+              transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
+            }}
+            transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            onClick={() => setExpandedTeam(3)}
+          >
+            <motion.div 
+              className={styles.teamNumber}
+              whileHover={{ 
+                scale: 1.08,
+                transition: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }
+              }}
+              transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+            >
+              03
+            </motion.div>
             <div className={styles.teamContent}>
-              <h3>SOFTWARE</h3>
-              <h4>BRAINS BEHIND EVERY BUILD.<p>OUR SOFTWARE TEAM BRIDGES HARDWARE AND INTELLIGENCE — CODING THE SYSTEMS THAT ENABLE AUTOMATION, DECISION-MAKING, AND CONTROL.</p></h4>
+              <motion.h3
+                whileHover={{ 
+                  y: -3,
+                  transition: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }
+                }}
+                transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+              >
+                CREATIVES
+              </motion.h3>
+              <h4>DESIGNING THE STORY AND EXPERIENCE.
+              <motion.p
+                whileHover={{ 
+                  y: -2,
+                  transition: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }
+                }}
+                transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+              >
+                WE SHAPE AE'S BRAND THROUGH MARKETING, EVENTS, AND MEDIA — MAKING OUR WORK VISIBLE, ENGAGING, AND INSPIRING TO STUDENTS, CLIENTS, AND THE COMMUNITY.
+              </motion.p></h4>
             </div>
-          </div>
+          </motion.div>
+        </div>
+        
+        {/* Roles Link */}
+        <div className={styles.rolesLink}>
+          <Link href="/roles">ROLES</Link>
         </div>
       </section>
+
+      {/* Team Detail Overlay */}
+      {expandedTeam && (
+        <motion.div
+          className={styles.teamOverlay}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          onClick={() => setExpandedTeam(null)}
+        >
+          <motion.div
+            className={styles.overlayContent}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              className={styles.closeButton}
+              onClick={() => setExpandedTeam(null)}
+            >
+              ×
+            </button>
+            
+            {teamDetails.find(team => team.id === expandedTeam) && (
+              <div className={styles.teamDetailContent}>
+                <motion.div 
+                  className={styles.leftContent}
+                  initial={{ x: 0, opacity: 1 }}
+                  animate={{ x: -80, opacity: 1 }}
+                  transition={{ duration: 1.0, ease: [0.25, 0.46, 0.45, 0.94] }}
+                >
+                  <motion.div 
+                    className={styles.teamNumberLarge}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 1.2, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  >
+                    {String(expandedTeam).padStart(2, '0')}
+                  </motion.div>
+                  <motion.h2
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  >
+                    {teamDetails.find(team => team.id === expandedTeam)?.title}
+                  </motion.h2>
+                  <motion.h3
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  >
+                    {teamDetails.find(team => team.id === expandedTeam)?.subtitle}
+                  </motion.h3>
+                  <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  >
+                    {teamDetails.find(team => team.id === expandedTeam)?.description}
+                  </motion.p>
+                </motion.div>
+                
+                <motion.div 
+                  className={styles.rightContent}
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                >
+                  <div className={styles.detailSection}>
+                    <h4>CORE SKILLS</h4>
+                    <ul>
+                      {teamDetails.find(team => team.id === expandedTeam)?.detailedContent.skills.map((skill, index) => (
+                        <motion.li 
+                          key={index}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
+                        >
+                          {skill}
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  {/* <div className={styles.detailSection}>
+                    <h4>RECENT PROJECTS</h4>
+                    <ul>
+                      {teamDetails.find(team => team.id === expandedTeam)?.detailedContent.projects.map((project, index) => (
+                        <motion.li 
+                          key={index}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.4, delay: 0.7 + index * 0.1 }}
+                        >
+                          {project}
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </div> */}
+                  
+                  <div className={styles.detailSection}>
+                    <h4>TOOLS & TECHNOLOGIES</h4>
+                    <ul>
+                      {teamDetails.find(team => team.id === expandedTeam)?.detailedContent.tools.map((tool, index) => (
+                        <motion.li 
+                          key={index}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.4, delay: 0.9 + index * 0.1 }}
+                        >
+                          {tool}
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </div>
+                </motion.div>
+              </div>
+            )}
+          </motion.div>
+        </motion.div>
+      )}
 
       {/* Family Section - Moved after Teams section as requested */}
       {/*
@@ -244,7 +555,7 @@ export default function Home() {
       */}
 
       {/* Timeline Section */}
-      <section className={styles.timeline}>
+      <section id="timeline" className={styles.timeline} ref={timelineRef}>
         <div className={styles.timelineContainer}>
           <h2 className={styles.timelineTitle}>FALL 2025</h2>
           
@@ -278,12 +589,42 @@ export default function Home() {
                     <div 
                       key={`day-${day}`} 
                       className={`${styles.calendarCell} ${
-                        currentMonth === 'JANUARY' && day === 21 ? styles.eventCell : ''
+                        currentMonth === 'SEPTEMBER' && [4, 9, 10, 12, 15, 16, 17, 19, 20, 21, 22].includes(day) ? styles.eventCell : ''
                       }`}
                     >
                       {day}
-                      {currentMonth === 'JANUARY' && day === 21 && (
-                        <div className={styles.eventIndicator}>Event One</div>
+                      {currentMonth === 'SEPTEMBER' && day === 4 && (
+                        <div className={styles.eventIndicator}>Applications Open</div>
+                      )}
+                      {currentMonth === 'SEPTEMBER' && day === 9 && (
+                        <div className={styles.eventIndicator}>Org Fair Tabling</div>
+                      )}
+                      {currentMonth === 'SEPTEMBER' && day === 10 && (
+                        <div className={styles.eventIndicator}>Info Session #1</div>
+                      )}
+                      {currentMonth === 'SEPTEMBER' && day === 12 && (
+                        <div className={styles.eventIndicator}>Board Apps Close</div>
+                      )}
+                      {currentMonth === 'SEPTEMBER' && day === 15 && (
+                        <div className={styles.eventIndicator}>Info Session #2</div>
+                      )}
+                      {currentMonth === 'SEPTEMBER' && day === 16 && (
+                        <div className={styles.eventIndicator}>Apps Close</div>
+                      )}
+                      {currentMonth === 'SEPTEMBER' && day === 17 && (
+                        <div className={styles.eventIndicator}>Technical Interviews Begin</div>
+                      )}
+                      {currentMonth === 'SEPTEMBER' && day === 19 && (
+                        <div className={styles.eventIndicator}>Technical Interviews End</div>
+                      )}
+                      {currentMonth === 'SEPTEMBER' && day === 20 && (
+                        <div className={styles.eventIndicator}>Behavioural Interviews</div>
+                      )}
+                      {currentMonth === 'SEPTEMBER' && day === 21 && (
+                        <div className={styles.eventIndicator}>Acceptances Sent</div>
+                      )}
+                      {currentMonth === 'SEPTEMBER' && day === 22 && (
+                        <div className={styles.eventIndicator}>Welcome Dinner</div>
                       )}
                     </div>
                   ))}
@@ -296,122 +637,150 @@ export default function Home() {
               <div className={styles.timelineEvents}>
                 <h2 className={styles.timelineHeader}>RECRUITMENT TIMELINE</h2>
                 
-                {/* January */}
+                {/* September */}
                 <div 
                   className={styles.timelineEvent}
                   onClick={() => {
-                    setCurrentMonth('JANUARY');
-                    setExpandedMonth('JANUARY');
+                    setCurrentMonth('SEPTEMBER');
+                    setExpandedMonth('SEPTEMBER');
                   }}
                 >
-                  <span className={styles.eventMonth}>JANUARY</span>
-                  {expandedMonth === 'JANUARY' && (
+                  <span className={styles.eventMonth}>SEPTEMBER</span>
+                  {expandedMonth === 'SEPTEMBER' && (
                     <div className={styles.monthEvents}>
                       <div className={styles.eventGroup}>
                         <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>EVENT ONE</span>
-                          <span className={styles.eventDate}>01/21</span>
+                          <span className={styles.eventName}>APPLICATIONS OPEN</span>
+                          <span className={styles.eventDate}>09/05</span>
                         </div>
                       </div>
                       <div className={styles.eventGroup}>
                         <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>EVENT TWO</span>
-                          <span className={styles.eventDate}>01/25</span>
+                          <span className={styles.eventName}>STUDENT ORG FAIR TABLING</span>
+                          <span className={styles.eventDate}>09/09</span>
                         </div>
                       </div>
                       <div className={styles.eventGroup}>
                         <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>EVENT THREE</span>
-                          <span className={styles.eventDate}>01/26</span>
+                          <span className={styles.eventName}>INFO SESSION #1</span>
+                          <span className={styles.eventDate}>09/10</span>
+                        </div>
+                      </div>
+                      <div className={styles.eventGroup}>
+                        <div className={styles.eventNameDate}>
+                          <span className={styles.eventName}>BOARD APPLICATIONS CLOSE</span>
+                          <span className={styles.eventDate}>09/12</span>
+                        </div>
+                      </div>
+                      <div className={styles.eventGroup}>
+                        <div className={styles.eventNameDate}>
+                          <span className={styles.eventName}>INFO SESSION #2</span>
+                          <span className={styles.eventDate}>09/15</span>
+                        </div>
+                      </div>
+                      <div className={styles.eventGroup}>
+                        <div className={styles.eventNameDate}>
+                          <span className={styles.eventName}>APPLICATIONS CLOSE</span>
+                          <span className={styles.eventDate}>09/16</span>
+                        </div>
+                      </div>
+                      <div className={styles.eventGroup}>
+                        <div className={styles.eventNameDate}>
+                          <span className={styles.eventName}>TECHNICAL INTERVIEWS BEGIN</span>
+                          <span className={styles.eventDate}>09/17</span>
+                        </div>
+                      </div>
+                      <div className={styles.eventGroup}>
+                        <div className={styles.eventNameDate}>
+                          <span className={styles.eventName}>TECHNICAL INTERVIEWS END</span>
+                          <span className={styles.eventDate}>09/19</span>
+                        </div>
+                      </div>
+                      <div className={styles.eventGroup}>
+                        <div className={styles.eventNameDate}>
+                          <span className={styles.eventName}>BEHAVIOURAL INTERVIEWS</span>
+                          <span className={styles.eventDate}>09/20</span>
+                        </div>
+                      </div>
+                      <div className={styles.eventGroup}>
+                        <div className={styles.eventNameDate}>
+                          <span className={styles.eventName}>ACCEPTANCES SENT</span>
+                          <span className={styles.eventDate}>09/21</span>
+                        </div>
+                      </div>
+                      <div className={styles.eventGroup}>
+                        <div className={styles.eventNameDate}>
+                          <span className={styles.eventName}>WELCOME DINNER</span>
+                          <span className={styles.eventDate}>09/22</span>
                         </div>
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* February */}
+                {/* October */}
                 <div 
                   className={styles.timelineEvent}
                   onClick={() => {
-                    setCurrentMonth('FEBRUARY');
-                    setExpandedMonth('FEBRUARY');
+                    setCurrentMonth('OCTOBER');
+                    setExpandedMonth('OCTOBER');
                   }}
                 >
-                  <span className={styles.eventMonth}>FEBRUARY</span>
-                  {expandedMonth === 'FEBRUARY' && (
+                  <span className={styles.eventMonth}>OCTOBER</span>
+                  {expandedMonth === 'OCTOBER' && (
                     <div className={styles.monthEvents}>
                       <div className={styles.eventGroup}>
                         <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>FEBRUARY →</span>
-                          <span className={styles.eventDate}>02/01</span>
+                          <span className={styles.eventName}>OCTOBER →</span>
+                          <span className={styles.eventDate}>10/01</span>
                         </div>
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* March */}
+                {/* November */}
                 <div 
                   className={styles.timelineEvent}
                   onClick={() => {
-                    setCurrentMonth('MARCH');
-                    setExpandedMonth('MARCH');
+                    setCurrentMonth('NOVEMBER');
+                    setExpandedMonth('NOVEMBER');
                   }}
                 >
-                  <span className={styles.eventMonth}>MARCH</span>
-                  {expandedMonth === 'MARCH' && (
+                  <span className={styles.eventMonth}>NOVEMBER</span>
+                  {expandedMonth === 'NOVEMBER' && (
                     <div className={styles.monthEvents}>
                       <div className={styles.eventGroup}>
                         <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>MARCH →</span>
-                          <span className={styles.eventDate}>03/01</span>
+                          <span className={styles.eventName}>NOVEMBER →</span>
+                          <span className={styles.eventDate}>11/01</span>
                         </div>
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* April */}
+                {/* December */}
                 <div 
                   className={styles.timelineEvent}
                   onClick={() => {
-                    setCurrentMonth('APRIL');
-                    setExpandedMonth('APRIL');
+                    setCurrentMonth('DECEMBER');
+                    setExpandedMonth('DECEMBER');
                   }}
                 >
-                  <span className={styles.eventMonth}>APRIL</span>
-                  {expandedMonth === 'APRIL' && (
+                  <span className={styles.eventMonth}>DECEMBER</span>
+                  {expandedMonth === 'DECEMBER' && (
                     <div className={styles.monthEvents}>
                       <div className={styles.eventGroup}>
                         <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>APRIL →</span>
-                          <span className={styles.eventDate}>04/01</span>
+                          <span className={styles.eventName}>DECEMBER →</span>
+                          <span className={styles.eventDate}>12/01</span>
                         </div>
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* May */}
-                <div 
-                  className={styles.timelineEvent}
-                  onClick={() => {
-                    setCurrentMonth('MAY');
-                    setExpandedMonth('MAY');
-                  }}
-                >
-                  <span className={styles.eventMonth}>MAY</span>
-                  {expandedMonth === 'MAY' && (
-                    <div className={styles.monthEvents}>
-                      <div className={styles.eventGroup}>
-                        <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>MAY →</span>
-                          <span className={styles.eventDate}>05/01</span>
-                        </div>
-          </div>
-          </div>
-                  )}
-          </div>
           </div>
           </div>
           </div>
@@ -465,6 +834,158 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Industry Modal */}
+      {showIndustryModal && (
+        <motion.div
+          className={styles.industryModal}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          onClick={() => setShowIndustryModal(false)}
+        >
+          <motion.div
+            className={styles.industryModalContent}
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ duration: 0.3 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              className={styles.industryModalClose}
+              onClick={() => setShowIndustryModal(false)}
+            >
+              ×
+            </button>
+            
+            <div className={styles.industryModalHeader}>
+              <h2>About Us – For Industry</h2>
+              <h3>Partner with SJSU's First Student-Led Engineering Consulting Club</h3>
+            </div>
+
+            <div className={styles.industryModalBody}>
+              <p className={styles.industryIntro}>
+                AE bridges the gap between academia and industry by giving companies, alumni, and faculty a direct channel to student talent. Our teams are structured like a professional consulting firm — with project managers, technical leads, developers, QA, and supporting roles in marketing, finance, and operations — ensuring reliability and high-quality deliverables.
+              </p>
+
+              <div className={styles.industrySection}>
+                <h4>What We Offer Our Industry Partners</h4>
+                
+                <div className={styles.industryFeature}>
+                  <h5>Real-World Project Execution</h5>
+                  <p>Gain solutions to your software and engineering challenges, delivered by cross-functional student teams under faculty and alumni guidance.</p>
+                </div>
+
+                <div className={styles.industryFeature}>
+                  <h5>Talent Pipeline</h5>
+                  <p>Work directly with top SJSU students. Our members are rigorously recruited, trained, and mentored through workshops, technical bootcamps, and project quality gates.</p>
+                </div>
+
+                <div className={styles.industryFeature}>
+                  <h5>Professionalism You Can Trust</h5>
+                  <p>AE enforces consulting-style standards (design reviews, midterms, finals) to ensure every project meets expectations. Statements of Work are vetted through campus compliance for security and accountability.</p>
+                </div>
+
+                <div className={styles.industryFeature}>
+                  <h5>Brand & Visibility</h5>
+                  <p>Partners gain visibility on campus through showcases, events, and co-branded outreach. Students recognize and value companies that invest in their growth.</p>
+                </div>
+              </div>
+
+              <div className={styles.industrySection}>
+                <h4>Why Partner With AE?</h4>
+                <ul className={styles.industryBenefits}>
+                  <li>Access innovative, cost-effective solutions built by driven student engineers.</li>
+                  <li>Build a recruiting pipeline from one of the most diverse engineering schools in Silicon Valley.</li>
+                  <li>Contribute directly to student development while solving real problems.</li>
+                </ul>
+              </div>
+
+              <div className={styles.industryCTA}>
+                <p><strong>Interested in partnering?</strong> Contact our Consulting Partnerships Team to explore project opportunities, recruiter sessions, or sponsorships.</p>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* Students Modal */}
+      {showStudentsModal && (
+        <motion.div
+          className={styles.studentsModal}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          onClick={() => setShowStudentsModal(false)}
+        >
+          <motion.div
+            className={styles.studentsModalContent}
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ duration: 0.3 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              className={styles.studentsModalClose}
+              onClick={() => setShowStudentsModal(false)}
+            >
+              ×
+            </button>
+            
+            <div className={styles.studentsModalHeader}>
+              <h2>About Us – For Students</h2>
+              <h3>Gain the Experience That Sets You Apart</h3>
+            </div>
+
+            <div className={styles.studentsModalBody}>
+              <p className={styles.studentsIntro}>
+                AE is SJSU's first student-led engineering consulting club, designed to give students the hands-on, real-world experience that recruiters look for — but rarely see on a college resume. Our members don't just attend meetings; they become consultants, project managers, technical leads, designers, and strategists. Every role mirrors industry standards, preparing you for internships and full-time jobs.
+              </p>
+
+              <div className={styles.studentsSection}>
+                <h4>What You'll Get as a Member</h4>
+                
+                <div className={styles.studentsFeature}>
+                  <h5>Real Projects with Real Clients</h5>
+                  <p>Work on professional-grade software and consulting projects for companies, alumni, and professors. Deliver solutions that go beyond the classroom.</p>
+                </div>
+
+                <div className={styles.studentsFeature}>
+                  <h5>Career-Ready Skills</h5>
+                  <p>Develop coding, project management, client communication, and teamwork skills in roles like Project Manager, Developer, QA Engineer, or Designer.</p>
+                </div>
+
+                <div className={styles.studentsFeature}>
+                  <h5>Workshops & Training</h5>
+                  <p>Learn cutting-edge skills in AI/ML, web development, and cloud computing through bootcamps, workshops, and peer-to-peer learning.</p>
+                </div>
+
+                <div className={styles.studentsFeature}>
+                  <h5>A Strong Community</h5>
+                  <p>Join a network of motivated peers, mentors, and alumni. Participate in events, showcases, and social activities that make AE more than just a club.</p>
+                </div>
+              </div>
+
+              <div className={styles.studentsSection}>
+                <h4>Why Join AE?</h4>
+                <ul className={styles.studentsBenefits}>
+                  <li>Build a portfolio of real client work you can showcase in interviews.</li>
+                  <li>Gain access to recruiter sessions, career workshops, and alumni networks.</li>
+                  <li>Take on leadership opportunities in management, creative, and technical roles.</li>
+                  <li>Graduate with more than just a degree — graduate with work experience.</li>
+                </ul>
+              </div>
+
+              <div className={styles.studentsCTA}>
+                <p><strong>Interested in joining?</strong> Apply through our Talent Team and start your journey.</p>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
      
     </main>
   );
