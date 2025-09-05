@@ -7,6 +7,14 @@ import { motion, useAnimation } from 'framer-motion';
 import { useSpring } from 'react-spring';
 import Link from 'next/link';
 
+interface Event {
+  id: string;
+  name: string;
+  date: string;
+  month: string;
+  day: number;
+}
+
 export default function Home() {
   // Refs for sections
   const heroRef = useRef<HTMLDivElement>(null);
@@ -22,6 +30,9 @@ export default function Home() {
   // Month labels used by the recruitment timeline
   const months = ['SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
   
+  // State for events
+  const [events, setEvents] = useState<Event[]>([]);
+  
   // State for FAQ
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   
@@ -33,6 +44,58 @@ export default function Home() {
   
   // State for students modal
   const [showStudentsModal, setShowStudentsModal] = useState(false);
+
+  // Load events from localStorage
+  useEffect(() => {
+    const savedEvents = localStorage.getItem('ae-events');
+    const eventsVersion = localStorage.getItem('ae-events-version');
+    
+    // Force refresh if version is old or if we find old date format
+    if (savedEvents && eventsVersion !== 'v2') {
+      const parsedEvents = JSON.parse(savedEvents);
+      const hasOldDate = parsedEvents.some((event: Event) => 
+        event.name === 'APPLICATIONS OPEN' && (event.date === '09/04' || event.day === 4)
+      );
+      
+      if (hasOldDate) {
+        // Clear old data and use fresh defaults
+        localStorage.removeItem('ae-events');
+        localStorage.setItem('ae-events-version', 'v2');
+      }
+    }
+    
+    const currentEvents = localStorage.getItem('ae-events');
+    if (currentEvents) {
+      const parsedEvents = JSON.parse(currentEvents);
+      // Check if we need to update the Applications Open date
+      const updatedEvents = parsedEvents.map((event: Event) => {
+        if (event.name === 'APPLICATIONS OPEN' && (event.date === '09/04' || event.day === 4)) {
+          return { ...event, date: '09/05', day: 5 };
+        }
+        return event;
+      });
+      setEvents(updatedEvents);
+      // Save the updated events back to localStorage
+      localStorage.setItem('ae-events', JSON.stringify(updatedEvents));
+    } else {
+      // Default events if none exist
+      const defaultEvents: Event[] = [
+        { id: '1', name: 'APPLICATIONS OPEN', date: '09/05', month: 'SEPTEMBER', day: 5 },
+        { id: '2', name: 'STUDENT ORG FAIR TABLING', date: '09/09', month: 'SEPTEMBER', day: 9 },
+        { id: '3', name: 'INFO SESSION #1', date: '09/10', month: 'SEPTEMBER', day: 10 },
+        { id: '4', name: 'BOARD APPLICATIONS CLOSE', date: '09/12', month: 'SEPTEMBER', day: 12 },
+        { id: '5', name: 'INFO SESSION #2', date: '09/15', month: 'SEPTEMBER', day: 15 },
+        { id: '6', name: 'APPLICATIONS CLOSE', date: '09/16', month: 'SEPTEMBER', day: 16 },
+        { id: '7', name: 'TECHNICAL INTERVIEWS BEGIN', date: '09/17', month: 'SEPTEMBER', day: 17 },
+        { id: '8', name: 'TECHNICAL INTERVIEWS END', date: '09/19', month: 'SEPTEMBER', day: 19 },
+        { id: '9', name: 'BEHAVIOURAL INTERVIEWS', date: '09/20', month: 'SEPTEMBER', day: 20 },
+        { id: '10', name: 'ACCEPTANCES SENT', date: '09/21', month: 'SEPTEMBER', day: 21 },
+        { id: '11', name: 'WELCOME DINNER', date: '09/22', month: 'SEPTEMBER', day: 22 }
+      ];
+      setEvents(defaultEvents);
+      localStorage.setItem('ae-events', JSON.stringify(defaultEvents));
+    }
+  }, []);
 
   // Handle escape key to close overlays
   useEffect(() => {
@@ -564,7 +627,9 @@ export default function Home() {
             <div className={styles.calendar}>
               <div className={styles.calendarHeader}>
                 <h3>{currentMonth}</h3>
-                <h3>EVENTS</h3>
+                <Link href="/admin" className={styles.eventsLink}>
+                  <h3>EVENTS</h3>
+                </Link>
               </div>
               
               <div className={styles.calendarGrid}>
@@ -589,43 +654,17 @@ export default function Home() {
                     <div 
                       key={`day-${day}`} 
                       className={`${styles.calendarCell} ${
-                        currentMonth === 'SEPTEMBER' && [4, 9, 10, 12, 15, 16, 17, 19, 20, 21, 22].includes(day) ? styles.eventCell : ''
+                        events.some(event => event.month === currentMonth && event.day === day) ? styles.eventCell : ''
                       }`}
                     >
                       {day}
-                      {currentMonth === 'SEPTEMBER' && day === 4 && (
-                        <div className={styles.eventIndicator}>Applications Open</div>
-                      )}
-                      {currentMonth === 'SEPTEMBER' && day === 9 && (
-                        <div className={styles.eventIndicator}>Org Fair Tabling</div>
-                      )}
-                      {currentMonth === 'SEPTEMBER' && day === 10 && (
-                        <div className={styles.eventIndicator}>Info Session #1</div>
-                      )}
-                      {currentMonth === 'SEPTEMBER' && day === 12 && (
-                        <div className={styles.eventIndicator}>Board Apps Close</div>
-                      )}
-                      {currentMonth === 'SEPTEMBER' && day === 15 && (
-                        <div className={styles.eventIndicator}>Info Session #2</div>
-                      )}
-                      {currentMonth === 'SEPTEMBER' && day === 16 && (
-                        <div className={styles.eventIndicator}>Apps Close</div>
-                      )}
-                      {currentMonth === 'SEPTEMBER' && day === 17 && (
-                        <div className={styles.eventIndicator}>Technical Interviews Begin</div>
-                      )}
-                      {currentMonth === 'SEPTEMBER' && day === 19 && (
-                        <div className={styles.eventIndicator}>Technical Interviews End</div>
-                      )}
-                      {currentMonth === 'SEPTEMBER' && day === 20 && (
-                        <div className={styles.eventIndicator}>Behavioural Interviews</div>
-                      )}
-                      {currentMonth === 'SEPTEMBER' && day === 21 && (
-                        <div className={styles.eventIndicator}>Acceptances Sent</div>
-                      )}
-                      {currentMonth === 'SEPTEMBER' && day === 22 && (
-                        <div className={styles.eventIndicator}>Welcome Dinner</div>
-                      )}
+                      {events
+                        .filter(event => event.month === currentMonth && event.day === day)
+                        .map((event) => (
+                          <div key={event.id} className={styles.eventIndicator}>
+                            {event.name}
+                          </div>
+                        ))}
                     </div>
                   ))}
                 </div>
@@ -637,148 +676,188 @@ export default function Home() {
               <div className={styles.timelineEvents}>
                 <h2 className={styles.timelineHeader}>RECRUITMENT TIMELINE</h2>
                 
-                {/* September */}
-                <div 
-                  className={styles.timelineEvent}
-                  onClick={() => {
-                    setCurrentMonth('SEPTEMBER');
-                    setExpandedMonth('SEPTEMBER');
-                  }}
-                >
-                  <span className={styles.eventMonth}>SEPTEMBER</span>
+                {/* Mobile Month Selector */}
+                <div className={styles.mobileMonthSelector}>
+                  <div 
+                    className={`${styles.mobileMonthOption} ${expandedMonth === 'SEPTEMBER' ? styles.active : ''}`}
+                    onClick={() => {
+                      setCurrentMonth('SEPTEMBER');
+                      setExpandedMonth('SEPTEMBER');
+                    }}
+                  >
+                    SEPTEMBER →
+                  </div>
+                  <div 
+                    className={`${styles.mobileMonthOption} ${expandedMonth === 'OCTOBER' ? styles.active : ''}`}
+                    onClick={() => {
+                      setCurrentMonth('OCTOBER');
+                      setExpandedMonth('OCTOBER');
+                    }}
+                  >
+                    OCTOBER →
+                  </div>
+                  <div 
+                    className={`${styles.mobileMonthOption} ${expandedMonth === 'NOVEMBER' ? styles.active : ''}`}
+                    onClick={() => {
+                      setCurrentMonth('NOVEMBER');
+                      setExpandedMonth('NOVEMBER');
+                    }}
+                  >
+                    NOVEMBER →
+                  </div>
+                  <div 
+                    className={`${styles.mobileMonthOption} ${expandedMonth === 'DECEMBER' ? styles.active : ''}`}
+                    onClick={() => {
+                      setCurrentMonth('DECEMBER');
+                      setExpandedMonth('DECEMBER');
+                    }}
+                  >
+                    DECEMBER →
+                  </div>
+                </div>
+
+                {/* Mobile Events Display */}
+                <div className={styles.mobileEventsDisplay}>
                   {expandedMonth === 'SEPTEMBER' && (
-                    <div className={styles.monthEvents}>
-                      <div className={styles.eventGroup}>
-                        <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>APPLICATIONS OPEN</span>
-                          <span className={styles.eventDate}>09/05</span>
-                        </div>
-                      </div>
-                      <div className={styles.eventGroup}>
-                        <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>STUDENT ORG FAIR TABLING</span>
-                          <span className={styles.eventDate}>09/09</span>
-                        </div>
-                      </div>
-                      <div className={styles.eventGroup}>
-                        <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>INFO SESSION #1</span>
-                          <span className={styles.eventDate}>09/10</span>
-                        </div>
-                      </div>
-                      <div className={styles.eventGroup}>
-                        <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>BOARD APPLICATIONS CLOSE</span>
-                          <span className={styles.eventDate}>09/12</span>
-                        </div>
-                      </div>
-                      <div className={styles.eventGroup}>
-                        <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>INFO SESSION #2</span>
-                          <span className={styles.eventDate}>09/15</span>
-                        </div>
-                      </div>
-                      <div className={styles.eventGroup}>
-                        <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>APPLICATIONS CLOSE</span>
-                          <span className={styles.eventDate}>09/16</span>
-                        </div>
-                      </div>
-                      <div className={styles.eventGroup}>
-                        <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>TECHNICAL INTERVIEWS BEGIN</span>
-                          <span className={styles.eventDate}>09/17</span>
-                        </div>
-                      </div>
-                      <div className={styles.eventGroup}>
-                        <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>TECHNICAL INTERVIEWS END</span>
-                          <span className={styles.eventDate}>09/19</span>
-                        </div>
-                      </div>
-                      <div className={styles.eventGroup}>
-                        <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>BEHAVIOURAL INTERVIEWS</span>
-                          <span className={styles.eventDate}>09/20</span>
-                        </div>
-                      </div>
-                      <div className={styles.eventGroup}>
-                        <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>ACCEPTANCES SENT</span>
-                          <span className={styles.eventDate}>09/21</span>
-                        </div>
-                      </div>
-                      <div className={styles.eventGroup}>
-                        <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>WELCOME DINNER</span>
-                          <span className={styles.eventDate}>09/22</span>
-                        </div>
-                      </div>
+                    <div className={styles.mobileMonthEvents}>
+                      {events
+                        .filter(event => event.month === 'SEPTEMBER')
+                        .sort((a, b) => a.day - b.day)
+                        .map((event) => (
+                          <div key={event.id} className={styles.mobileEventGroup}>
+                            <div className={styles.mobileEventNameDate}>
+                              <span className={styles.mobileEventName}>{event.name}</span>
+                              <span className={styles.mobileEventDate}>{event.date}</span>
+                            </div>
+                          </div>
+                        ))}
                     </div>
                   )}
-                </div>
 
-                {/* October */}
-                <div 
-                  className={styles.timelineEvent}
-                  onClick={() => {
-                    setCurrentMonth('OCTOBER');
-                    setExpandedMonth('OCTOBER');
-                  }}
-                >
-                  <span className={styles.eventMonth}>OCTOBER</span>
                   {expandedMonth === 'OCTOBER' && (
-                    <div className={styles.monthEvents}>
-                      <div className={styles.eventGroup}>
-                        <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>OCTOBER →</span>
-                          <span className={styles.eventDate}>10/01</span>
+                    <div className={styles.mobileMonthEvents}>
+                      <div className={styles.mobileEventGroup}>
+                        <div className={styles.mobileEventNameDate}>
+                          <span className={styles.mobileEventName}>OCTOBER →</span>
+                          <span className={styles.mobileEventDate}>10/01</span>
                         </div>
                       </div>
                     </div>
                   )}
-                </div>
 
-                {/* November */}
-                <div 
-                  className={styles.timelineEvent}
-                  onClick={() => {
-                    setCurrentMonth('NOVEMBER');
-                    setExpandedMonth('NOVEMBER');
-                  }}
-                >
-                  <span className={styles.eventMonth}>NOVEMBER</span>
                   {expandedMonth === 'NOVEMBER' && (
-                    <div className={styles.monthEvents}>
-                      <div className={styles.eventGroup}>
-                        <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>NOVEMBER →</span>
-                          <span className={styles.eventDate}>11/01</span>
+                    <div className={styles.mobileMonthEvents}>
+                      <div className={styles.mobileEventGroup}>
+                        <div className={styles.mobileEventNameDate}>
+                          <span className={styles.mobileEventName}>NOVEMBER →</span>
+                          <span className={styles.mobileEventDate}>11/01</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {expandedMonth === 'DECEMBER' && (
+                    <div className={styles.mobileMonthEvents}>
+                      <div className={styles.mobileEventGroup}>
+                        <div className={styles.mobileEventNameDate}>
+                          <span className={styles.mobileEventName}>DECEMBER →</span>
+                          <span className={styles.mobileEventDate}>12/01</span>
                         </div>
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* December */}
-                <div 
-                  className={styles.timelineEvent}
-                  onClick={() => {
-                    setCurrentMonth('DECEMBER');
-                    setExpandedMonth('DECEMBER');
-                  }}
-                >
-                  <span className={styles.eventMonth}>DECEMBER</span>
-                  {expandedMonth === 'DECEMBER' && (
-                    <div className={styles.monthEvents}>
-                      <div className={styles.eventGroup}>
-                        <div className={styles.eventNameDate}>
-                          <span className={styles.eventName}>DECEMBER →</span>
-                          <span className={styles.eventDate}>12/01</span>
+                {/* Desktop Timeline - Show on desktop, hide mobile elements */}
+                <div className={styles.desktopTimeline}>
+                  {/* September */}
+                  <div 
+                    className={`${styles.timelineEvent} ${expandedMonth === 'SEPTEMBER' ? styles.expanded : ''}`}
+                    onClick={() => {
+                      setCurrentMonth('SEPTEMBER');
+                      setExpandedMonth('SEPTEMBER');
+                    }}
+                  >
+                    <span className={styles.eventMonth}>SEPTEMBER</span>
+                    {expandedMonth === 'SEPTEMBER' && (
+                      <div className={styles.monthEvents}>
+                        {events
+                          .filter(event => event.month === 'SEPTEMBER')
+                          .sort((a, b) => a.day - b.day)
+                          .map((event) => (
+                            <div key={event.id} className={styles.eventGroup}>
+                              <div className={styles.eventNameDate}>
+                                <span className={styles.eventName}>{event.name}</span>
+                                <span className={styles.eventDate}>{event.date}</span>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* October */}
+                  <div 
+                    className={`${styles.timelineEvent} ${expandedMonth === 'OCTOBER' ? styles.expanded : ''}`}
+                    onClick={() => {
+                      setCurrentMonth('OCTOBER');
+                      setExpandedMonth('OCTOBER');
+                    }}
+                  >
+                    <span className={styles.eventMonth}>OCTOBER</span>
+                    {expandedMonth === 'OCTOBER' && (
+                      <div className={styles.monthEvents}>
+                        <div className={styles.eventGroup}>
+                          <div className={styles.eventNameDate}>
+                            <span className={styles.eventName}>OCTOBER →</span>
+                            <span className={styles.eventDate}>10/01</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
+
+                  {/* November */}
+                  <div 
+                    className={`${styles.timelineEvent} ${expandedMonth === 'NOVEMBER' ? styles.expanded : ''}`}
+                    onClick={() => {
+                      setCurrentMonth('NOVEMBER');
+                      setExpandedMonth('NOVEMBER');
+                    }}
+                  >
+                    <span className={styles.eventMonth}>NOVEMBER</span>
+                    {expandedMonth === 'NOVEMBER' && (
+                      <div className={styles.monthEvents}>
+                        <div className={styles.eventGroup}>
+                          <div className={styles.eventNameDate}>
+                            <span className={styles.eventName}>NOVEMBER →</span>
+                            <span className={styles.eventDate}>11/01</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* December */}
+                  <div 
+                    className={`${styles.timelineEvent} ${expandedMonth === 'DECEMBER' ? styles.expanded : ''}`}
+                    onClick={() => {
+                      setCurrentMonth('DECEMBER');
+                      setExpandedMonth('DECEMBER');
+                    }}
+                  >
+                    <span className={styles.eventMonth}>DECEMBER</span>
+                    {expandedMonth === 'DECEMBER' && (
+                      <div className={styles.monthEvents}>
+                        <div className={styles.eventGroup}>
+                          <div className={styles.eventNameDate}>
+                            <span className={styles.eventName}>DECEMBER →</span>
+                            <span className={styles.eventDate}>12/01</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
           </div>

@@ -28,6 +28,7 @@
   align-items: center;
   transition: all 0.3s ease;
   text-decoration: none;
+  margin-right: 20px;
 }
 
 .logoLink:hover {
@@ -553,5 +554,74 @@
 
   .roleCard {
     padding: 12px;
+  }
+}
+
+/* Mobile Navbar Styles for Roles Page */
+@media (max-width: 768px) {
+  .header {
+    padding: 10px 15px;
+  }
+
+  .logoLink {
+    margin-right: 15px;
+  }
+
+  .headerLogo span {
+    font-size: 14px;
+  }
+
+  .nav {
+    gap: 10px;
+    font-size: 10px;
+  }
+  
+  .nav a {
+    font-size: 10px;
+    white-space: nowrap;
+  }
+  
+  .contactBtn {
+    min-width: 70px;
+    padding: 4px 10px;
+    font-size: 10px;
+    white-space: nowrap;
+    margin-left: 8px;
+  }
+  
+  .contactBtn:hover {
+    padding: 5px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 8px 10px;
+  }
+
+  .logoLink {
+    margin-right: 12px;
+  }
+
+  .headerLogo span {
+    font-size: 12px;
+  }
+
+  .nav {
+    gap: 8px;
+    font-size: 9px;
+  }
+  
+  .nav a {
+    font-size: 9px;
+    white-space: nowrap;
+  }
+  
+  .contactBtn {
+    min-width: 60px;
+    padding: 3px 8px;
+    font-size: 9px;
+    white-space: nowrap;
+    margin-left: 5px;
   }
 }

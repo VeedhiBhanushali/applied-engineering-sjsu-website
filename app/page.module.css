@@ -3,6 +3,10 @@
   overflow-x: hidden;
   padding: 0;
   margin: 0;
+  min-height: 100vh;
+  height: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Header and Navigation */
@@ -947,39 +951,55 @@
 /* Mobile responsiveness for team overlay */
 @media (max-width: 768px) {
   .overlayContent {
-    width: 90%;
-    height: 80%;
-    padding: 35px 25px;
+    width: 95%;
+    height: 90%;
+    padding: 20px 20px 20px 80px;
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+  }
+
+  .overlayContent::-webkit-scrollbar {
+    display: none; /* WebKit */
   }
 
   .teamDetailContent {
     flex-direction: column;
-    gap: 30px;
+    gap: 20px;
+    height: auto;
+    min-height: 100%;
   }
 
   .leftContent {
     padding-right: 0;
-    text-align: center;
-    padding-left: 20px;
-    margin-bottom: 20px;
+    text-align: left;
+    padding-left: 0;
+    margin-bottom: 15px;
+    flex: none;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .teamNumberLarge {
-    font-size: 70px;
+    font-size: 60px;
     position: static;
     transform: none;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     left: auto;
+    text-align: left;
+    padding-left: 20px;
   }
 
   .leftContent h2 {
-    font-size: 32px;
-    padding-left: 0;
+    font-size: 28px;
+    padding-left: 20px;
+    margin-bottom: 8px;
   }
 
   .leftContent h3 {
-    font-size: 15px;
-    padding-left: 0;
+    font-size: 13px;
+    padding-left: 20px;
+    margin-bottom: 12px;
   }
 
   .leftContent h3::before {
@@ -987,20 +1007,40 @@
   }
 
   .leftContent p {
-    font-size: 14px;
-    padding-left: 0;
+    font-size: 13px;
+    padding-left: 20px;
+    line-height: 1.4;
+    margin-bottom: 15px;
   }
 
   .rightContent {
     padding-left: 0;
+    overflow: visible;
+    flex: none;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .detailSection {
+    margin-bottom: 20px;
+  }
+
+  .detailSection h4 {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .detailSection p {
+    font-size: 12px;
+    line-height: 1.4;
   }
 
   .closeButton {
-    top: 20px;
-    right: 20px;
-    font-size: 24px;
-    width: 32px;
-    height: 32px;
+    top: 15px;
+    right: 15px;
+    font-size: 20px;
+    width: 28px;
+    height: 28px;
   }
 }
 
@@ -1126,11 +1166,17 @@
 .timeline {
   padding: 100px 50px;
   background: #fff;
+  min-height: auto;
+  height: auto;
+  overflow: visible;
 }
 
 .timelineContainer {
   max-width: 1400px;
   margin: 0 auto;
+  min-height: auto;
+  height: auto;
+  overflow: visible;
 }
 
 .timelineTitle {
@@ -1146,6 +1192,9 @@
   display: flex;
   gap: 80px;
   align-items: flex-start;
+  min-height: auto;
+  height: auto;
+  overflow: visible;
 }
 
 @media (max-width: 1200px) {
@@ -1184,6 +1233,26 @@
 
 .calendarHeader h3:last-child {
   font-weight: bold;
+}
+
+.eventsLink {
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.eventsLink:hover {
+  text-decoration: none;
+  opacity: 0.7;
+}
+
+.eventsLink h3 {
+  font-family: 'Helvetica', sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  color: #000;
+  text-transform: uppercase;
+  margin: 0;
 }
 
 .calendarDays {
@@ -1251,6 +1320,9 @@
   justify-content: flex-end;
   padding-right: 10px;
   margin-top: -58px;
+  min-height: auto;
+  height: auto;
+  overflow: visible;
 }
 
 .timelineEvents {
@@ -1260,16 +1332,20 @@
   width: 500px;
   align-items: flex-end;
   position: relative;
+  min-height: auto;
+  height: auto;
 }
 
 .timelineEvent {
   display: flex;
   width: 100%;
   align-items: flex-start;
-  margin-bottom: 0;
+  margin-bottom: 20px;
   position: relative;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding-bottom: 0px;
+  min-height: auto;
+  height: auto;
 }
 
 .eventMonth {
@@ -1294,10 +1370,31 @@
   top: 0;
   width: 600px;
   padding-top: 32px;
-  padding-bottom: 0;
+  padding-bottom: 20px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  min-height: auto;
+  height: auto;
+}
+
+/* Hide month events on desktop by default, show only when expanded */
+.timelineEvent:not(.expanded) .monthEvents {
+  display: none;
+}
+
+.timelineEvent.expanded .monthEvents {
+  display: flex;
+}
+
+/* Desktop Timeline - Show on desktop, hide mobile elements */
+.desktopTimeline {
+  display: block;
+}
+
+.mobileMonthSelector,
+.mobileEventsDisplay {
+  display: none;
 }
 
 .monthEvents::after {
@@ -1383,13 +1480,6 @@
   width: 100%;
 }
 
-.timelineEventExpanded {
-  display: block;
-}
-
-.timelineEventCollapsed {
-  display: none;
-}
 
 /* FAQ Section with left-aligned heading and right-aligned content */
 .faq {
@@ -1803,10 +1893,103 @@
     display: flex;
     flex-direction: column;
     gap: 0;
+    align-items: stretch;
+    margin-top: -20px;
+  }
+
+  /* Mobile Timeline Structure */
+  .timelineEvent {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 0;
+    padding: 0;
+  }
+
+  /* September - show month name next to events */
+  .timelineEvent:first-child .eventMonth {
+    text-align: right;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    flex: 0 0 auto;
+    order: 2;
+    width: 100%;
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  /* Other months - keep them in fixed positions */
+  .timelineEvent:not(:first-child) {
+    position: absolute;
+    right: 0;
+  }
+
+  /* Position each month at specific heights */
+  .timelineEvent:nth-child(2) { /* October */
+    top: 111px;
+  }
+  
+  .timelineEvent:nth-child(3) { /* November */
+    top: 146px;
+  }
+  
+  .timelineEvent:nth-child(4) { /* December */
+    top: 183px;
+  }
+
+  .timelineEvent:not(:first-child) .eventMonth {
+    text-align: right;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    flex: 0 0 auto;
+    order: 2;
+    width: 100%;
+    display: block;
   }
 
   .monthEvents {
-    width: calc(100% - 100px);
+    position: relative;
+    right: 0;
+    top: 0;
+    width: auto;
+    flex: 1;
+    padding-top: 0;
+    margin-top: 0;
+    order: 1;
+    display: flex !important; /* Force show all month events on mobile */
+  }
+
+  /* Hide events for non-expanded months on mobile */
+  .timelineEvent:not(.expanded) .monthEvents {
+    display: none !important;
+  }
+
+  .timelineEvent.expanded .monthEvents {
+    display: flex !important;
+  }
+
+  /* Force all month names to always be visible on mobile when expanded */
+  .timelineEvent.expanded .eventMonth {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: auto !important;
+    min-width: 80px !important;
+    font-size: 12px !important;
+    color: #000 !important;
+    background: transparent !important;
+    position: relative !important;
+    z-index: 10 !important;
+  }
+
+  /* Extend the first line under the month name when expanded on mobile */
+  .timelineEvent.expanded .monthEvents::after {
+    right: -90px; /* Extend to the right to go under the month name */
+    width: calc(100% + 90px); /* Extend the width to cover the month name */
   }
 
   .teamsGrid {
@@ -1881,21 +2064,25 @@
   }
   
   .nav {
-    gap: 20px;
+    gap: 10px;
     font-size: 10px;
   }
   
   .nav a {
     font-size: 10px;
+    white-space: nowrap;
   }
   
   .contactBtn {
-    min-width: 80px;
-    padding: 6px 12px;
+    min-width: 70px;
+    padding: 4px 10px;
+    font-size: 10px;
+    white-space: nowrap;
+    margin-left: 8px;
   }
   
   .contactBtn:hover {
-    padding: 8px 15px;
+    padding: 5px 12px;
   }
   
   .heroTitle {
@@ -1984,12 +2171,6 @@
     margin: 15px 0;
   }
   
-  .timelineEvent {
-    flex: 0 0 100%;
-    border-bottom: none;
-    padding-bottom: 0;
-    margin-bottom: 0;
-  }
   
   .timelineBar,
   .timelineSecondaryBar {
@@ -2017,7 +2198,21 @@
   }
   
   .nav {
-    gap: 15px;
+    gap: 8px;
+    font-size: 9px;
+  }
+  
+  .nav a {
+    font-size: 9px;
+    white-space: nowrap;
+  }
+  
+  .contactBtn {
+    min-width: 60px;
+    padding: 3px 8px;
+    font-size: 9px;
+    white-space: nowrap;
+    margin-left: 5px;
   }
 
   .rolesLink {
@@ -2145,16 +2340,20 @@
 @media screen and (max-width: 768px) {
   .timeline {
     padding: 20px;
-    min-height: auto;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    height: auto;
+    overflow: visible;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
   }
 
   .timelineContainer {
     padding: 10px;
-    height: 100%;
+    height: auto;
     display: flex;
     flex-direction: column;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
   }
 
   .timelineTitle {
@@ -2167,8 +2366,8 @@
   .timelineContent {
     flex-direction: column;
     gap: 20px;
-    overflow-y: auto;
-    max-height: calc(100vh - 150px);
+    overflow-y: visible;
+    max-height: none;
   }
 
   .calendar {
@@ -2188,7 +2387,7 @@
 
   .timelineHeader {
     font-size: 20px;
-    margin-bottom: 60px;
+    margin-bottom: 80px;
     margin-top: 10px;
     text-align: left;
   }
@@ -2217,28 +2416,14 @@
     display: none;
   }
 
-  .timelineEvent {
-    padding: 0;
-    margin: 0;
-    margin-top: -20px;
-  }
-
-  .eventMonth {
-    font-size: 12px;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-    line-height: 1 !important;
-  }
 
   .monthEvents {
     margin-top: 4px;
-    padding-top: 6px;
+    padding-top: 15px;
   }
 
   .monthEvents::after {
-    top: 16px !important;
+    top: 25px !important;
   }
 
   .eventGroup {
@@ -2266,9 +2451,104 @@
     margin-bottom: 30px;
   }
 
+  /* Mobile Timeline Structure - 480px */
+  .timelineEvent {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 0;
+    padding: 0;
+  }
+
+  /* September - show month name next to events */
+  .timelineEvent:first-child .eventMonth {
+    text-align: right;
+    margin: 0;
+    padding: 0;
+    font-size: 10px;
+    flex: 0 0 auto;
+    order: 2;
+    width: 100%;
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  /* Other months - keep them in fixed positions */
+  .timelineEvent:not(:first-child) {
+    position: absolute;
+    right: 0;
+  }
+
+  /* Position each month at specific heights */
+  .timelineEvent:nth-child(2) { /* October */
+    top: 101px;
+  }
+  
+  .timelineEvent:nth-child(3) { /* November */
+    top: 134px;
+  }
+  
+  .timelineEvent:nth-child(4) { /* December */
+    top: 169px;
+  }
+
+  .timelineEvent:not(:first-child) .eventMonth {
+    text-align: right;
+    margin: 0;
+    padding: 0;
+    font-size: 10px;
+    flex: 0 0 auto;
+    order: 2;
+    width: 100%;
+    display: block;
+  }
+
+  .monthEvents {
+    position: relative;
+    right: 0;
+    top: 0;
+    width: auto;
+    flex: 1;
+    padding-top: 0;
+    margin-top: 0;
+    order: 1;
+    display: flex !important; /* Force show all month events on mobile */
+  }
+
+  /* Hide events for non-expanded months on mobile */
+  .timelineEvent:not(.expanded) .monthEvents {
+    display: none !important;
+  }
+
+  .timelineEvent.expanded .monthEvents {
+    display: flex !important;
+  }
+
+  /* Force all month names to always be visible on mobile when expanded */
+  .timelineEvent.expanded .eventMonth {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: auto !important;
+    min-width: 80px !important;
+    font-size: 10px !important;
+    color: #000 !important;
+    background: transparent !important;
+    position: relative !important;
+    z-index: 10 !important;
+  }
+
+  /* Extend the first line under the month name when expanded on mobile */
+  .timelineEvent.expanded .monthEvents::after {
+    right: -90px; /* Extend to the right to go under the month name */
+    width: calc(100% + 90px); /* Extend the width to cover the month name */
+  }
+
   .timelineHeader {
     font-size: 18px;
-    margin-bottom: 25px;
+    margin-bottom: 40px;
     margin-top: 5px;
   }
 
@@ -2295,28 +2575,14 @@
     display: none;
   }
 
-  .timelineEvent {
-    padding: 0;
-    margin: 0;
-    margin-top: -25px;
-  }
-
-  .eventMonth {
-    font-size: 10px;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-    line-height: 1 !important;
-  }
 
   .monthEvents {
     margin-top: 3px;
-    padding-top: 5px;
+    padding-top: 12px;
   }
 
   .monthEvents::after {
-    top: 13px !important;
+    top: 20px !important;
   }
 
   .eventNameDate {
@@ -2908,5 +3174,13 @@
 
   .studentsCTA p {
     font-size: 9px;
+  }
+}
+
+/* Global Mobile Scrolling Fixes */
+@media (max-width: 768px) {
+  .main, .timeline, .teams, .about, .family, .faq, .overlayContent, .teamDetailContent, .leftContent, .rightContent {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
   }
 } 

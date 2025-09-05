@@ -252,7 +252,6 @@ export default function Roles() {
           <Link href="/#family">FAMILY</Link>
           <Link href="/#timeline">TIMELINE</Link>
           <Link href="/#faq">FAQ</Link>
-          <Link href="/roles" className={styles.activeNav}>ROLES</Link>
           <Link href="/contact" className={styles.contactBtn}>
             CONTACT
             <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
