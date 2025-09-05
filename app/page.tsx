@@ -19,7 +19,8 @@ export default function Home() {
   
   // State for timeline
   const [activeMonth, setActiveMonth] = useState(0);
-  const months = ['January', 'February', 'March', 'April', 'May'];
+  // Month labels used by the recruitment timeline
+  const months = ['SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
   
   // State for FAQ
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
@@ -216,7 +217,6 @@ export default function Home() {
           <div className={styles.aboutRight}>
             <button className={styles.aboutButton} onClick={() => setShowIndustryModal(true)}>FOR INDUSTRY</button>
             <button className={styles.aboutButton} onClick={() => setShowStudentsModal(true)}>FOR STUDENTS</button>
-            <button className={styles.learnMore}>LEARN MORE</button>
         </div>
         </div>
       </section>
@@ -370,7 +370,7 @@ export default function Home() {
         
         {/* Roles Link */}
         <div className={styles.rolesLink}>
-          <Link href="/roles">ROLES</Link>
+          <Link href="/roles">VIEW ALL ROLES</Link>
         </div>
       </section>
 

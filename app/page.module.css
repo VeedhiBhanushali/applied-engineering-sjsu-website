@@ -32,6 +32,7 @@
 
 .logoLink:hover {
   transform: scale(1.05);
+  text-decoration: none;
 }
 
 .logo {
@@ -374,10 +375,12 @@
 }
 
 .aboutRight {
+  position: absolute;
+  right: 3%;
+  bottom: 40px;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding-top: 373px;
   align-items: flex-end;
 }
 
@@ -416,18 +419,38 @@
 
 .aboutButton {
   font-family: 'Helvetica', sans-serif;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
-  padding: 9px 10px;
+  padding: 12px 16px;
   border-radius: 40px;
   border: none;
   background-color: rgba(200, 198, 198, 0.5);
   color: #000;
   transition: all 0.3s ease;
-  min-width: 135px;
+  min-width: 160px;
   text-align: center;
   width: fit-content;
-  margin-right: -145px;
+  margin-right: 0;
+}
+
+/* Hover animations for hero CTAs */
+.aboutButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+/* Make the first CTA (FOR INDUSTRY) look like the outline "LEARN MORE" button */
+.aboutRight .aboutButton:first-child {
+  background-color: transparent !important;
+  border: 1px solid #000 !important;
+  color: #000 !important;
+  border-radius: 24px !important;
+  width: fit-content;
+}
+
+.aboutRight .aboutButton:first-child:hover {
+  background: #000 !important;
+  color: #fff !important;
 }
 
 .learnMore {
@@ -444,7 +467,7 @@
   border-radius: 20px;
   transition: all 0.3s ease;
   text-align: center;
-  margin-right: -142px;
+  margin-right: 0;
 }
 
 .aboutButton:hover {
@@ -1371,7 +1394,7 @@
 /* FAQ Section with left-aligned heading and right-aligned content */
 .faq {
   background-color: #000;
-  padding: 100px 0 0 0;
+  padding: 100px 0 60px 0;
   position: relative;
   color: var(--white);
   margin-bottom: 0;
@@ -1696,6 +1719,10 @@
   .subtitle {
     font-size: clamp(0.9rem, 1.5vw, 1.1rem);
   }
+  .aboutRight {
+    right: 3%;
+    bottom: 30px;
+  }
   
   .sectionHeader h2 {
     font-size: clamp(1.8rem, 3vw, 2.5rem);
@@ -1773,6 +1800,9 @@
 
   .timelineEvents {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
   }
 
   .monthEvents {
@@ -1793,7 +1823,8 @@
   }
 
   .aboutRight {
-    padding-top: 40px;
+    position: static;
+    padding-top: 30px;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -1876,7 +1907,8 @@
   }
   
   .aboutRight {
-    padding-top: 30px;
+    position: static;
+    padding-top: 20px;
   }
   
   .aboutButton {
@@ -1903,6 +1935,18 @@
     padding: 20px;
   }
   
+  .faq {
+    padding: 80px 0 0px 0;
+    margin-bottom: -30px;
+  }
+  
+  .faqHeader {
+    margin-left: 0;
+    padding: 0 15px;
+    margin-bottom: 120px;
+    margin-top: 20px;
+  }
+  
   .faqContainer {
     padding: 0 15px;
   }
@@ -1918,7 +1962,7 @@
   
   .faqSocialIcons {
     left: 50%;
-    top: -60px;
+    top: -80px;
   }
   
   .socialIcon {
@@ -1942,13 +1986,8 @@
   
   .timelineEvent {
     flex: 0 0 100%;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 15px;
-    margin-bottom: 15px;
-  }
-  
-  .timelineEvent:last-child {
     border-bottom: none;
+    padding-bottom: 0;
     margin-bottom: 0;
   }
   
@@ -2106,21 +2145,30 @@
 @media screen and (max-width: 768px) {
   .timeline {
     padding: 20px;
+    min-height: auto;
+    height: 100vh;
+    overflow: hidden;
   }
 
   .timelineContainer {
     padding: 10px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
   .timelineTitle {
     margin-top: 20px;
     margin-bottom: 40px;
     font-size: 32px;
+    flex-shrink: 0;
   }
 
   .timelineContent {
     flex-direction: column;
-    gap: 30px;
+    gap: 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - 150px);
   }
 
   .calendar {
@@ -2128,17 +2176,19 @@
     font-size: 14px;
     padding: 15px;
     margin-top: 0;
+    flex-shrink: 0;
   }
 
   .recruitmentTimeline {
     width: 100%;
     padding: 15px;
     margin-top: 20px;
+    flex-shrink: 0;
   }
 
   .timelineHeader {
     font-size: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 60px;
     margin-top: 10px;
     text-align: left;
   }
@@ -2162,22 +2212,33 @@
     font-size: 12px;
   }
 
+  /* Hide event labels on small screens to reduce clutter */
   .eventIndicator {
-    font-size: 10px;
-    padding: 2px 4px;
+    display: none;
   }
 
   .timelineEvent {
-    padding: 10px;
-    margin-bottom: 10px;
+    padding: 0;
+    margin: 0;
+    margin-top: -20px;
   }
 
   .eventMonth {
-    font-size: 16px;
+    font-size: 12px;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    line-height: 1 !important;
   }
 
   .monthEvents {
-    margin-top: 10px;
+    margin-top: 4px;
+    padding-top: 6px;
+  }
+
+  .monthEvents::after {
+    top: 16px !important;
   }
 
   .eventGroup {
@@ -2186,6 +2247,7 @@
 
   .eventNameDate {
     font-size: 14px;
+    padding-top: 4px;
   }
 
   .eventName {
@@ -2228,21 +2290,38 @@
     font-size: 11px;
   }
 
+  /* Keep cells black for event days but hide text */
   .eventIndicator {
-    font-size: 9px;
-    padding: 1px 2px;
+    display: none;
   }
 
   .timelineEvent {
-    padding: 8px;
+    padding: 0;
+    margin: 0;
+    margin-top: -25px;
   }
 
   .eventMonth {
-    font-size: 14px;
+    font-size: 10px;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    line-height: 1 !important;
+  }
+
+  .monthEvents {
+    margin-top: 3px;
+    padding-top: 5px;
+  }
+
+  .monthEvents::after {
+    top: 13px !important;
   }
 
   .eventNameDate {
     font-size: 12px;
+    padding-top: 3px;
   }
 }
 
