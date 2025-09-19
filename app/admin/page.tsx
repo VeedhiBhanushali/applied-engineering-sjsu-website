@@ -25,22 +25,18 @@ export default function AdminPortal() {
   });
 
   // Load events from localStorage on component mount
-  const EVENTS_VERSION = 'v3';
+  const EVENTS_VERSION = 'v4';
   useEffect(() => {
+    const eventsVersion = localStorage.getItem('ae-events-version');
+    if (eventsVersion !== EVENTS_VERSION) {
+      localStorage.removeItem('ae-events');
+      localStorage.setItem('ae-events-version', EVENTS_VERSION);
+    }
+
     const savedEvents = localStorage.getItem('ae-events');
     if (savedEvents) {
       const parsedEvents = JSON.parse(savedEvents);
-      // Check if we need to update the Applications Open date
-      const updatedEvents = parsedEvents.map((event: Event) => {
-        if (event.name === 'APPLICATIONS OPEN' && event.date === '09/04') {
-          return { ...event, date: '09/05', day: 5 };
-        }
-        return event;
-      });
-      setEvents(updatedEvents);
-      // Save the updated events back to localStorage
-      localStorage.setItem('ae-events', JSON.stringify(updatedEvents));
-      localStorage.setItem('ae-events-version', EVENTS_VERSION);
+      setEvents(parsedEvents);
     } else {
       // Default events if none exist
       const defaultEvents: Event[] = [
@@ -63,9 +59,23 @@ export default function AdminPortal() {
   }, []);
 
   // Save events to localStorage whenever events change
+  const monthToMM: Record<string, string> = {
+    'SEPTEMBER': '09',
+    'OCTOBER': '10',
+    'NOVEMBER': '11',
+    'DECEMBER': '12',
+  };
+
+  const normalizeDates = (items: Event[]): Event[] =>
+    items.map((e) => ({
+      ...e,
+      date: `${monthToMM[e.month] || '01'}/${String(e.day).padStart(2, '0')}`,
+    }));
+
   const saveEvents = (updatedEvents: Event[]) => {
     setEvents(updatedEvents);
-    localStorage.setItem('ae-events', JSON.stringify(updatedEvents));
+    const normalized = normalizeDates(updatedEvents);
+    localStorage.setItem('ae-events', JSON.stringify(normalized));
     localStorage.setItem('ae-events-version', EVENTS_VERSION);
   };
 
@@ -89,7 +99,7 @@ export default function AdminPortal() {
       const event: Event = {
         id: Date.now().toString(),
         name: newEvent.name.toUpperCase(),
-        date: `${newEvent.month.substring(0, 2)}/${newEvent.day.toString().padStart(2, '0')}`,
+        date: `${monthToMM[newEvent.month] || '01'}/${newEvent.day.toString().padStart(2, '0')}`,
         month: newEvent.month,
         day: newEvent.day
       };

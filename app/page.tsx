@@ -46,39 +46,21 @@ export default function Home() {
   const [showStudentsModal, setShowStudentsModal] = useState(false);
 
   // Load events from localStorage
-  const EVENTS_VERSION = 'v3';
+  const EVENTS_VERSION = 'v4';
   useEffect(() => {
     const savedEvents = localStorage.getItem('ae-events');
     const eventsVersion = localStorage.getItem('ae-events-version');
     
-    // Force refresh if version is old or if we find old date format
-    if (savedEvents && eventsVersion !== EVENTS_VERSION) {
-      const parsedEvents = JSON.parse(savedEvents);
-      const hasOldDate = parsedEvents.some((event: Event) => 
-        event.name === 'APPLICATIONS OPEN' && (event.date === '09/04' || event.day === 4)
-      );
-      
-      if (hasOldDate) {
-        // Clear old data and use fresh defaults
-        localStorage.removeItem('ae-events');
-        localStorage.setItem('ae-events-version', EVENTS_VERSION);
-      }
+    // Force refresh if version is old
+    if (eventsVersion !== EVENTS_VERSION) {
+      localStorage.removeItem('ae-events');
+      localStorage.setItem('ae-events-version', EVENTS_VERSION);
     }
     
     const currentEvents = localStorage.getItem('ae-events');
     if (currentEvents) {
       const parsedEvents = JSON.parse(currentEvents);
-      // Check if we need to update the Applications Open date
-      const updatedEvents = parsedEvents.map((event: Event) => {
-        if (event.name === 'APPLICATIONS OPEN' && (event.date === '09/04' || event.day === 4)) {
-          return { ...event, date: '09/05', day: 5 };
-        }
-        return event;
-      });
-      setEvents(updatedEvents);
-      // Save the updated events back to localStorage
-      localStorage.setItem('ae-events', JSON.stringify(updatedEvents));
-      localStorage.setItem('ae-events-version', EVENTS_VERSION);
+      setEvents(parsedEvents);
     } else {
       // Default events if none exist
       const defaultEvents: Event[] = [
