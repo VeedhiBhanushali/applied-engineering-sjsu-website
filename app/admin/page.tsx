@@ -25,6 +25,7 @@ export default function AdminPortal() {
   });
 
   // Load events from localStorage on component mount
+  const EVENTS_VERSION = 'v3';
   useEffect(() => {
     const savedEvents = localStorage.getItem('ae-events');
     if (savedEvents) {
@@ -39,23 +40,25 @@ export default function AdminPortal() {
       setEvents(updatedEvents);
       // Save the updated events back to localStorage
       localStorage.setItem('ae-events', JSON.stringify(updatedEvents));
+      localStorage.setItem('ae-events-version', EVENTS_VERSION);
     } else {
       // Default events if none exist
       const defaultEvents: Event[] = [
         { id: '1', name: 'APPLICATIONS OPEN', date: '09/05', month: 'SEPTEMBER', day: 5 },
         { id: '2', name: 'STUDENT ORG FAIR TABLING', date: '09/09', month: 'SEPTEMBER', day: 9 },
-        { id: '3', name: 'INFO SESSION #1', date: '09/10', month: 'SEPTEMBER', day: 10 },
-        { id: '4', name: 'BOARD APPLICATIONS CLOSE', date: '09/12', month: 'SEPTEMBER', day: 12 },
-        { id: '5', name: 'INFO SESSION #2', date: '09/15', month: 'SEPTEMBER', day: 15 },
-        { id: '6', name: 'APPLICATIONS CLOSE', date: '09/16', month: 'SEPTEMBER', day: 16 },
-        { id: '7', name: 'TECHNICAL INTERVIEWS BEGIN', date: '09/17', month: 'SEPTEMBER', day: 17 },
-        { id: '8', name: 'TECHNICAL INTERVIEWS END', date: '09/19', month: 'SEPTEMBER', day: 19 },
-        { id: '9', name: 'BEHAVIOURAL INTERVIEWS', date: '09/20', month: 'SEPTEMBER', day: 20 },
-        { id: '10', name: 'ACCEPTANCES SENT', date: '09/21', month: 'SEPTEMBER', day: 21 },
-        { id: '11', name: 'WELCOME DINNER', date: '09/22', month: 'SEPTEMBER', day: 22 }
+        { id: '3', name: 'INFO SESSION #1', date: '09/22', month: 'SEPTEMBER', day: 22 },
+        { id: '4', name: 'BOARD APPLICATIONS CLOSE', date: '09/23', month: 'SEPTEMBER', day: 23 },
+        { id: '5', name: 'INFO SESSION #2', date: '09/25', month: 'SEPTEMBER', day: 25 },
+        { id: '6', name: 'APPLICATIONS CLOSE', date: '09/29', month: 'SEPTEMBER', day: 29 },
+        { id: '7', name: 'TECHNICAL INTERVIEWS BEGIN', date: '09/30', month: 'SEPTEMBER', day: 30 },
+        { id: '8', name: 'TECHNICAL INTERVIEWS END', date: '10/03', month: 'OCTOBER', day: 3 },
+        { id: '9', name: 'BEHAVIOURAL INTERVIEWS', date: '10/04', month: 'OCTOBER', day: 4 },
+        { id: '10', name: 'ACCEPTANCES SENT', date: '10/05', month: 'OCTOBER', day: 5 },
+        { id: '11', name: 'WELCOME DINNER', date: '10/06', month: 'OCTOBER', day: 6 }
       ];
       setEvents(defaultEvents);
       localStorage.setItem('ae-events', JSON.stringify(defaultEvents));
+      localStorage.setItem('ae-events-version', EVENTS_VERSION);
     }
   }, []);
 
@@ -63,6 +66,7 @@ export default function AdminPortal() {
   const saveEvents = (updatedEvents: Event[]) => {
     setEvents(updatedEvents);
     localStorage.setItem('ae-events', JSON.stringify(updatedEvents));
+    localStorage.setItem('ae-events-version', EVENTS_VERSION);
   };
 
   const handleEdit = (event: Event) => {
