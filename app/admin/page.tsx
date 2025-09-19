@@ -24,19 +24,33 @@ export default function AdminPortal() {
     day: 1
   });
 
-  // Load events from localStorage on component mount
-  const EVENTS_VERSION = 'v4';
-  useEffect(() => {
-    const eventsVersion = localStorage.getItem('ae-events-version');
-    if (eventsVersion !== EVENTS_VERSION) {
-      localStorage.removeItem('ae-events');
-      localStorage.setItem('ae-events-version', EVENTS_VERSION);
-    }
+  // Target dates to align with the latest schedule (from screenshot)
+  const desiredEventsByName: Record<string, { date: string; month: string; day: number }> = {
+    'APPLICATIONS OPEN': { date: '09/05', month: 'SEPTEMBER', day: 5 },
+    'STUDENT ORG FAIR TABLING': { date: '09/09', month: 'SEPTEMBER', day: 9 },
+    'INFO SESSION #1': { date: '09/22', month: 'SEPTEMBER', day: 22 },
+    'BOARD APPLICATIONS CLOSE': { date: '09/23', month: 'SEPTEMBER', day: 23 },
+    'INFO SESSION #2': { date: '09/25', month: 'SEPTEMBER', day: 25 },
+    'APPLICATIONS CLOSE': { date: '09/29', month: 'SEPTEMBER', day: 29 },
+    'TECHNICAL INTERVIEWS BEGIN': { date: '09/30', month: 'SEPTEMBER', day: 30 },
+    'BEHAVIOURAL INTERVIEWS': { date: '10/04', month: 'OCTOBER', day: 4 },
+    'ACCEPTANCES SENT': { date: '10/05', month: 'OCTOBER', day: 5 },
+    'WELCOME DINNER': { date: '10/06', month: 'OCTOBER', day: 6 }
+  };
 
+  // Load events from localStorage on component mount
+  useEffect(() => {
     const savedEvents = localStorage.getItem('ae-events');
     if (savedEvents) {
-      const parsedEvents = JSON.parse(savedEvents);
-      setEvents(parsedEvents);
+      const parsedEvents = JSON.parse(savedEvents) as Event[];
+      // Align any existing events to the desired schedule by name
+      const updatedEvents = parsedEvents.map((event: Event) => {
+        const desired = desiredEventsByName[event.name];
+        return desired ? { ...event, ...desired } : event;
+      });
+      setEvents(updatedEvents);
+      // Save the updated events back to localStorage
+      localStorage.setItem('ae-events', JSON.stringify(updatedEvents));
     } else {
       // Default events if none exist
       const defaultEvents: Event[] = [
@@ -47,36 +61,19 @@ export default function AdminPortal() {
         { id: '5', name: 'INFO SESSION #2', date: '09/25', month: 'SEPTEMBER', day: 25 },
         { id: '6', name: 'APPLICATIONS CLOSE', date: '09/29', month: 'SEPTEMBER', day: 29 },
         { id: '7', name: 'TECHNICAL INTERVIEWS BEGIN', date: '09/30', month: 'SEPTEMBER', day: 30 },
-        { id: '8', name: 'TECHNICAL INTERVIEWS END', date: '10/03', month: 'OCTOBER', day: 3 },
-        { id: '9', name: 'BEHAVIOURAL INTERVIEWS', date: '10/04', month: 'OCTOBER', day: 4 },
-        { id: '10', name: 'ACCEPTANCES SENT', date: '10/05', month: 'OCTOBER', day: 5 },
-        { id: '11', name: 'WELCOME DINNER', date: '10/06', month: 'OCTOBER', day: 6 }
+        { id: '8', name: 'BEHAVIOURAL INTERVIEWS', date: '10/04', month: 'OCTOBER', day: 4 },
+        { id: '9', name: 'ACCEPTANCES SENT', date: '10/05', month: 'OCTOBER', day: 5 },
+        { id: '10', name: 'WELCOME DINNER', date: '10/06', month: 'OCTOBER', day: 6 }
       ];
       setEvents(defaultEvents);
       localStorage.setItem('ae-events', JSON.stringify(defaultEvents));
-      localStorage.setItem('ae-events-version', EVENTS_VERSION);
     }
   }, []);
 
   // Save events to localStorage whenever events change
-  const monthToMM: Record<string, string> = {
-    'SEPTEMBER': '09',
-    'OCTOBER': '10',
-    'NOVEMBER': '11',
-    'DECEMBER': '12',
-  };
-
-  const normalizeDates = (items: Event[]): Event[] =>
-    items.map((e) => ({
-      ...e,
-      date: `${monthToMM[e.month] || '01'}/${String(e.day).padStart(2, '0')}`,
-    }));
-
   const saveEvents = (updatedEvents: Event[]) => {
     setEvents(updatedEvents);
-    const normalized = normalizeDates(updatedEvents);
-    localStorage.setItem('ae-events', JSON.stringify(normalized));
-    localStorage.setItem('ae-events-version', EVENTS_VERSION);
+    localStorage.setItem('ae-events', JSON.stringify(updatedEvents));
   };
 
   const handleEdit = (event: Event) => {
@@ -86,8 +83,16 @@ export default function AdminPortal() {
 
   const handleSave = () => {
     if (editingEvent) {
+      const monthToNumber: Record<string, string> = {
+        'SEPTEMBER': '09',
+        'OCTOBER': '10',
+        'NOVEMBER': '11',
+        'DECEMBER': '12'
+      };
+      const computedDate = `${monthToNumber[editingEvent.month] || '01'}/${String(editingEvent.day).padStart(2, '0')}`;
+      const normalizedEditingEvent: Event = { ...editingEvent, date: computedDate };
       const updatedEvents = events.map(e => 
-        e.id === editingEvent.id ? editingEvent : e
+        e.id === editingEvent.id ? normalizedEditingEvent : e
       );
       saveEvents(updatedEvents);
       setEditingEvent(null);
@@ -99,7 +104,7 @@ export default function AdminPortal() {
       const event: Event = {
         id: Date.now().toString(),
         name: newEvent.name.toUpperCase(),
-        date: `${monthToMM[newEvent.month] || '01'}/${newEvent.day.toString().padStart(2, '0')}`,
+        date: `${newEvent.month.substring(0, 2)}/${newEvent.day.toString().padStart(2, '0')}`,
         month: newEvent.month,
         day: newEvent.day
       };
